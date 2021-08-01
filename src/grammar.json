@@ -12,14 +12,90 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "SYMBOL",
+          "name": "statement"
+        }
+      ]
+    },
+    "statement": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "expression"
+        }
+      ]
+    },
+    "expression": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "nil"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "bool"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "integer"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "float"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "char"
+        }
+      ]
+    },
+    "nil": {
+      "type": "STRING",
+      "value": "nil"
+    },
+    "bool": {
+      "type": "CHOICE",
+      "members": [
+        {
           "type": "STRING",
-          "value": "let x"
+          "value": "true"
         },
         {
           "type": "STRING",
-          "value": "let y"
+          "value": "false"
         }
       ]
+    },
+    "integer": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "[+-]?\\d[\\d_]*([iu](8|16|32|64))?"
+        },
+        {
+          "type": "PATTERN",
+          "value": "[+-]?0b[01_]+"
+        },
+        {
+          "type": "PATTERN",
+          "value": "[+-]?0o[0-7_]+"
+        },
+        {
+          "type": "PATTERN",
+          "value": "[+-]?0x[0-9a-fA-F_]+"
+        }
+      ]
+    },
+    "float": {
+      "type": "PATTERN",
+      "value": "[+-]?\\d[\\d_]*(\\.\\d[\\d_]*)?((e-?\\d+)|(f(32|64)))?"
+    },
+    "char": {
+      "type": "PATTERN",
+      "value": "'([\\u00C0-\\u1FFF\\u2C00-\\uD7FF\\w]|\\\\([\\'\\\\abefnrtv]|u[a-zA-Z0-9]{1,4}|u\\{[a-zA-Z0-9]{1,6}\\}))'"
     },
     "comment": {
       "type": "SEQ",
