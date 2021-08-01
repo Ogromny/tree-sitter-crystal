@@ -1,0 +1,10 @@
+=======
+Strings
+=======
+
+"test"
+
+-------
+
+(program
+	(string))

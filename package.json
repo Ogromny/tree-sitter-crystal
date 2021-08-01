@@ -1,0 +1,14 @@
+{
+  "name": "tree-sitter-crystal",
+  "version": "1.0.0",
+  "description": "A WIP TS for Crystal",
+  "main": "bindings/node",
+  "author": "Ogromny",
+  "license": "MIT",
+  "dependencies": {
+    "nan": "^2.14.2"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.20.0"
+  }
+}

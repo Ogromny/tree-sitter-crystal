@@ -1,0 +1,19 @@
+========
+Comments
+========
+
+# comment
+
+# comment
+## test
+# :nodoc:
+# :faketaxi:
+
+--------
+
+(program
+	(comment)
+	(comment)
+	(comment)
+	(comment_directive)
+	(comment))
