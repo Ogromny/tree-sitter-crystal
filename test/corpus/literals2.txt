@@ -1,0 +1,12 @@
+=========
+literals2
+=========
+
+'\uFFFF'     # hexadecimal unicode character
+'\u{10FFFF}' # hexadecimal unicode character
+
+--------
+
+(program
+	(statements (statement (expression (char)))) (comment)
+	(statements (statement (expression (char)))) (comment))

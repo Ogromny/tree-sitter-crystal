@@ -1,9 +1,13 @@
 module.exports = grammar({
 	name: "crystal",
 	extras: $ => [
+		/\s/, // whitespace
 		$.comment,
 		$.comment_directive,
-		/(\r|\n|\t| )/
+	],
+	externals: $ => [
+		$.char,
+		$.string,
 	],
 	rules: {
 		program: $ => repeat(
@@ -36,7 +40,7 @@ module.exports = grammar({
 			/[+-]?0x[0-9a-fA-F_]+/,
 		),
 		float: $ => /[+-]?\d[\d_]*(\.\d[\d_]*)?((e-?\d+)|(f(32|64)))?/,
-		char: $ => /'([\u00C0-\u1FFF\u2C00-\uD7FF\w]|\\([\'\\abefnrtv]|u[a-zA-Z0-9]{1,4}|u\{[a-zA-Z0-9]{1,6}\}))'/,
+		// char: $ => /'([\u00C0-\u1FFF\u2C00-\uD7FF\w]|\\([\'\\abefnrtv]|u[a-zA-Z0-9]{1,4}|u\{[a-zA-Z0-9]{1,6}\}))'/,
 
 		comment: $ => seq(
 			"#",
