@@ -56,6 +56,10 @@
         {
           "type": "SYMBOL",
           "name": "string_percent_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string_rdoc"
         }
       ]
     },
@@ -173,6 +177,10 @@
     {
       "type": "SYMBOL",
       "name": "string_percent_literal"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "string_rdoc"
     }
   ],
   "inline": [],

@@ -9,6 +9,7 @@ module.exports = grammar({
 		$.char,
 		$.string_normal,
 		$.string_percent_literal,
+		$.string_rdoc,
 	],
 	rules: {
 		program: $ => repeat(
@@ -28,7 +29,8 @@ module.exports = grammar({
 			$.float,
 			$.char,
 			$.string_normal,
-			$.string_percent_literal
+			$.string_percent_literal,
+			$.string_rdoc
 		),
 		
 		nil: $ => "nil",

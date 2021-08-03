@@ -11,6 +11,7 @@ enum TokenType {
     CHAR,
     STRING_NORMAL,
     STRING_PERCENT_LITERAL,
+    STRING_RDOC,
 };
 
 #define DEBUG(...)                                              \
@@ -162,27 +163,6 @@ bool handle_char_escape(TSLexer *lexer)
     }
 
     return false;
-}
-
-char const *const string_start(TSLexer *lexer)
-{
-    switch (lexer->lookahead) {
-    case '"': {
-        lexer->advance(lexer, false);
-        return "\"";
-    }
-    }
-
-    return NULL;
-}
-
-char const *const string_end(char const *const sstart)
-{
-    size_t len = strlen(sstart);
-
-    if (!strncmp(sstart, "\"", len)) {
-        return sstart;
-    }
 }
 
 bool handle_string_interpolation(TSLexer *lexer)
@@ -400,7 +380,7 @@ string_normal:
         if (lexer->lookahead == '\\') {
             lexer->advance(lexer, false);
             consume_whitespace(lexer);
-			goto string_normal;
+            goto string_normal;
         }
 
         lexer->result_symbol = STRING_NORMAL;
@@ -456,6 +436,68 @@ string_normal:
 
         lexer->advance(lexer, false);
         lexer->result_symbol = STRING_PERCENT_LITERAL;
+        return true;
+    }
+
+    if (valid_symbols[STRING_RDOC] && lexer->lookahead == '<') {
+        lexer->advance(lexer, false);
+        if (lexer->lookahead != '<') {
+            return false;
+        }
+
+        lexer->advance(lexer, false);
+        if (lexer->lookahead != '-') {
+            return false;
+        }
+
+        lexer->advance(lexer, false);
+        // TODO: can overflow, maybe refactor in futur
+        int heredoc[256] = {0};
+
+        for (int i = 0, j = sizeof(heredoc) / sizeof(*heredoc); i < j; ++i) {
+            if (!i && !iswalpha(lexer->lookahead)) {
+                return false;
+            }
+
+            if (!iswalnum(lexer->lookahead) && lexer->lookahead != '_') {
+                break;
+            }
+
+            heredoc[i] = lexer->lookahead;
+            lexer->advance(lexer, false);
+        }
+
+        if (!(*heredoc)) {
+            return false;
+        }
+
+        DEBUG("heredoc: '%c%c%c%c'\n", heredoc[0], heredoc[1], heredoc[2],
+              heredoc[3])
+
+        while (true) {
+            if (!lexer->lookahead) {
+                // NOTE: probably EOF
+                return false;
+            }
+
+            if (lexer->lookahead == *heredoc) {
+                bool valid = true;
+                for (int i = 1, j = sizeof(heredoc) / sizeof(*heredoc);
+                     i < j && valid && heredoc[i]; ++i) {
+                    lexer->advance(lexer, false);
+                    valid = lexer->lookahead == heredoc[i];
+                }
+
+                if (valid) {
+                    break;
+                }
+            }
+
+            lexer->advance(lexer, false);
+        }
+
+        lexer->advance(lexer, false);
+        lexer->result_symbol = STRING_RDOC;
         return true;
     }
 

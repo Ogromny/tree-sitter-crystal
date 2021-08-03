@@ -60,7 +60,19 @@ Strings
 "world, " \
 "no newlines" # same as "hello world, no newlines"
 %Q|hello "world"|    
-
+<<-XML
+<parent>
+  <child />
+</parent>
+XML
+<<-STRING # => "Hello\n  world"
+  Hello
+    world
+  STRING
+<<-STRING # => "  Hello\n    world"
+Hello
+  world
+STRING
 
 -------
 
@@ -119,4 +131,7 @@ Strings
 	(statements (statement (expression (string_percent_literal))))
 	(statements (statement (expression (string_normal)))) (comment)
 	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_percent_literal)))))
+	(statements (statement (expression (string_percent_literal))))
+	(statements (statement (expression (string_rdoc))))
+	(statements (statement (expression (string_rdoc))))
+	(statements (statement (expression (string_rdoc)))))

@@ -49,6 +49,10 @@
         {
           "type": "string_percent_literal",
           "named": true
+        },
+        {
+          "type": "string_rdoc",
+          "named": true
         }
       ]
     }
@@ -141,6 +145,10 @@
   },
   {
     "type": "string_percent_literal",
+    "named": true
+  },
+  {
+    "type": "string_rdoc",
     "named": true
   },
   {

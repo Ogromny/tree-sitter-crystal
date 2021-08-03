@@ -8,10 +8,10 @@
 #define LANGUAGE_VERSION 13
 #define STATE_COUNT 15
 #define LARGE_STATE_COUNT 10
-#define SYMBOL_COUNT 26
+#define SYMBOL_COUNT 27
 #define ALIAS_COUNT 0
-#define TOKEN_COUNT 17
-#define EXTERNAL_TOKEN_COUNT 3
+#define TOKEN_COUNT 18
+#define EXTERNAL_TOKEN_COUNT 4
 #define FIELD_COUNT 0
 #define MAX_ALIAS_SEQUENCE_LENGTH 3
 #define PRODUCTION_ID_COUNT 1
@@ -33,15 +33,16 @@ enum {
   sym_char = 14,
   sym_string_normal = 15,
   sym_string_percent_literal = 16,
-  sym_program = 17,
-  sym_statements = 18,
-  sym_statement = 19,
-  sym_expression = 20,
-  sym_bool = 21,
-  sym_integer = 22,
-  sym_comment = 23,
-  sym_comment_directive = 24,
-  aux_sym_program_repeat1 = 25,
+  sym_string_rdoc = 17,
+  sym_program = 18,
+  sym_statements = 19,
+  sym_statement = 20,
+  sym_expression = 21,
+  sym_bool = 22,
+  sym_integer = 23,
+  sym_comment = 24,
+  sym_comment_directive = 25,
+  aux_sym_program_repeat1 = 26,
 };
 
 static const char * const ts_symbol_names[] = {
@@ -62,6 +63,7 @@ static const char * const ts_symbol_names[] = {
   [sym_char] = "char",
   [sym_string_normal] = "string_normal",
   [sym_string_percent_literal] = "string_percent_literal",
+  [sym_string_rdoc] = "string_rdoc",
   [sym_program] = "program",
   [sym_statements] = "statements",
   [sym_statement] = "statement",
@@ -91,6 +93,7 @@ static const TSSymbol ts_symbol_map[] = {
   [sym_char] = sym_char,
   [sym_string_normal] = sym_string_normal,
   [sym_string_percent_literal] = sym_string_percent_literal,
+  [sym_string_rdoc] = sym_string_rdoc,
   [sym_program] = sym_program,
   [sym_statements] = sym_statements,
   [sym_statement] = sym_statement,
@@ -168,6 +171,10 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .named = true,
   },
   [sym_string_percent_literal] = {
+    .visible = true,
+    .named = true,
+  },
+  [sym_string_rdoc] = {
     .visible = true,
     .named = true,
   },
@@ -637,12 +644,14 @@ enum {
   ts_external_token_char = 0,
   ts_external_token_string_normal = 1,
   ts_external_token_string_percent_literal = 2,
+  ts_external_token_string_rdoc = 3,
 };
 
 static const TSSymbol ts_external_scanner_symbol_map[EXTERNAL_TOKEN_COUNT] = {
   [ts_external_token_char] = sym_char,
   [ts_external_token_string_normal] = sym_string_normal,
   [ts_external_token_string_percent_literal] = sym_string_percent_literal,
+  [ts_external_token_string_rdoc] = sym_string_rdoc,
 };
 
 static const bool ts_external_scanner_states[2][EXTERNAL_TOKEN_COUNT] = {
@@ -650,6 +659,7 @@ static const bool ts_external_scanner_states[2][EXTERNAL_TOKEN_COUNT] = {
     [ts_external_token_char] = true,
     [ts_external_token_string_normal] = true,
     [ts_external_token_string_percent_literal] = true,
+    [ts_external_token_string_rdoc] = true,
   },
 };
 
@@ -673,6 +683,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_char] = ACTIONS(1),
     [sym_string_normal] = ACTIONS(1),
     [sym_string_percent_literal] = ACTIONS(1),
+    [sym_string_rdoc] = ACTIONS(1),
   },
   [1] = {
     [sym_program] = STATE(11),
@@ -697,6 +708,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_char] = ACTIONS(7),
     [sym_string_normal] = ACTIONS(7),
     [sym_string_percent_literal] = ACTIONS(7),
+    [sym_string_rdoc] = ACTIONS(7),
   },
   [2] = {
     [sym_statements] = STATE(7),
@@ -720,6 +732,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_char] = ACTIONS(7),
     [sym_string_normal] = ACTIONS(7),
     [sym_string_percent_literal] = ACTIONS(7),
+    [sym_string_rdoc] = ACTIONS(7),
   },
   [3] = {
     [sym_statements] = STATE(7),
@@ -743,6 +756,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_char] = ACTIONS(21),
     [sym_string_normal] = ACTIONS(21),
     [sym_string_percent_literal] = ACTIONS(21),
+    [sym_string_rdoc] = ACTIONS(21),
   },
   [4] = {
     [sym_comment] = STATE(4),
@@ -760,6 +774,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_char] = ACTIONS(36),
     [sym_string_normal] = ACTIONS(36),
     [sym_string_percent_literal] = ACTIONS(36),
+    [sym_string_rdoc] = ACTIONS(36),
   },
   [5] = {
     [sym_comment] = STATE(5),
@@ -777,6 +792,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_char] = ACTIONS(40),
     [sym_string_normal] = ACTIONS(40),
     [sym_string_percent_literal] = ACTIONS(40),
+    [sym_string_rdoc] = ACTIONS(40),
   },
   [6] = {
     [sym_comment] = STATE(6),
@@ -794,6 +810,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_char] = ACTIONS(44),
     [sym_string_normal] = ACTIONS(44),
     [sym_string_percent_literal] = ACTIONS(44),
+    [sym_string_rdoc] = ACTIONS(44),
   },
   [7] = {
     [sym_comment] = STATE(7),
@@ -811,6 +828,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_char] = ACTIONS(48),
     [sym_string_normal] = ACTIONS(48),
     [sym_string_percent_literal] = ACTIONS(48),
+    [sym_string_rdoc] = ACTIONS(48),
   },
   [8] = {
     [sym_comment] = STATE(8),
@@ -828,6 +846,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_char] = ACTIONS(52),
     [sym_string_normal] = ACTIONS(52),
     [sym_string_percent_literal] = ACTIONS(52),
+    [sym_string_rdoc] = ACTIONS(52),
   },
   [9] = {
     [sym_comment] = STATE(9),
@@ -845,6 +864,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_char] = ACTIONS(56),
     [sym_string_normal] = ACTIONS(56),
     [sym_string_percent_literal] = ACTIONS(56),
+    [sym_string_rdoc] = ACTIONS(56),
   },
 };
 
