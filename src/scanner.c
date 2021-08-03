@@ -370,6 +370,7 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         return false;
     }
 
+string_normal:
     if (valid_symbols[STRING_NORMAL] && lexer->lookahead == '"') {
         lexer->advance(lexer, false);
 
@@ -392,6 +393,16 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         }
 
         lexer->advance(lexer, false);
+        lexer->mark_end(lexer);
+
+        consume_whitespace(lexer);
+
+        if (lexer->lookahead == '\\') {
+            lexer->advance(lexer, false);
+            consume_whitespace(lexer);
+			goto string_normal;
+        }
+
         lexer->result_symbol = STRING_NORMAL;
         return true;
     }
@@ -399,53 +410,53 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
     if (valid_symbols[STRING_PERCENT_LITERAL] && lexer->lookahead == '%') {
         lexer->advance(lexer, false);
 
-		if (lexer->lookahead == 'q' || lexer->lookahead == 'Q') {
-			lexer->advance(lexer, false);
-		}
+        if (lexer->lookahead == 'q' || lexer->lookahead == 'Q') {
+            lexer->advance(lexer, false);
+        }
 
         int seq[] = {'(', '[', '{', '<', '|'};
-		int qes[] = {')', ']', '}', '>', '|'};
-		int s = 0;
-		int q = 0;
-		int depth = 0;
+        int qes[] = {')', ']', '}', '>', '|'};
+        int s = 0;
+        int q = 0;
+        int depth = 0;
 
         for (int i = 0, j = sizeof(seq) / sizeof(*seq); i < j; ++i) {
             if (lexer->lookahead == seq[i]) {
-				s = seq[i];
-				q = qes[i];
+                s = seq[i];
+                q = qes[i];
             }
         }
 
-		if (!s) {
-			return false;
-		}
+        if (!s) {
+            return false;
+        }
 
-		while (true) {
-			lexer->advance(lexer, false);
+        while (true) {
+            lexer->advance(lexer, false);
 
-			if (!lexer->lookahead) {
-				// NOTE: probably EOF
-				return false;
-			}
+            if (!lexer->lookahead) {
+                // NOTE: probably EOF
+                return false;
+            }
 
-			if (lexer->lookahead == s) {
-				if (lexer->lookahead == q) {
-					break;
-				}
+            if (lexer->lookahead == s) {
+                if (lexer->lookahead == q) {
+                    break;
+                }
 
-				++depth;
-			}
+                ++depth;
+            }
 
-			if (lexer->lookahead == q) {
-				if (!(depth--)) {
-					break;
-				}
-			}
-		}
+            if (lexer->lookahead == q) {
+                if (!(depth--)) {
+                    break;
+                }
+            }
+        }
 
-		lexer->advance(lexer, false);
-		lexer->result_symbol = STRING_PERCENT_LITERAL;
-		return true;
+        lexer->advance(lexer, false);
+        lexer->result_symbol = STRING_PERCENT_LITERAL;
+        return true;
     }
 
     return false;

@@ -54,6 +54,13 @@ Strings
 %Q<hello <"world">>  
 %Q<hello <"world">>  
 %Q|hello "world"|    
+"hello
+      world" # => "hello\n      world"
+  "hello " \
+"world, " \
+"no newlines" # same as "hello world, no newlines"
+%Q|hello "world"|    
+
 
 -------
 
@@ -109,4 +116,7 @@ Strings
 	(statements (statement (expression (string_percent_literal)))) 
 	(statements (statement (expression (string_percent_literal)))) 
 	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal))))) 
+	(statements (statement (expression (string_percent_literal))))
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_percent_literal)))))
