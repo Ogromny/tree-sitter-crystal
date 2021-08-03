@@ -48,6 +48,10 @@
         {
           "type": "SYMBOL",
           "name": "char"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string_normal"
         }
       ]
     },
@@ -160,7 +164,7 @@
     },
     {
       "type": "SYMBOL",
-      "name": "string"
+      "name": "string_normal"
     }
   ],
   "inline": [],

@@ -31,7 +31,7 @@ enum {
   anon_sym_COLONnodoc_COLON = 12,
   anon_sym_COLONinherit_COLON = 13,
   sym_char = 14,
-  sym_string = 15,
+  sym_string_normal = 15,
   sym_program = 16,
   sym_statements = 17,
   sym_statement = 18,
@@ -59,7 +59,7 @@ static const char * const ts_symbol_names[] = {
   [anon_sym_COLONnodoc_COLON] = ":nodoc:",
   [anon_sym_COLONinherit_COLON] = ":inherit:",
   [sym_char] = "char",
-  [sym_string] = "string",
+  [sym_string_normal] = "string_normal",
   [sym_program] = "program",
   [sym_statements] = "statements",
   [sym_statement] = "statement",
@@ -87,7 +87,7 @@ static const TSSymbol ts_symbol_map[] = {
   [anon_sym_COLONnodoc_COLON] = anon_sym_COLONnodoc_COLON,
   [anon_sym_COLONinherit_COLON] = anon_sym_COLONinherit_COLON,
   [sym_char] = sym_char,
-  [sym_string] = sym_string,
+  [sym_string_normal] = sym_string_normal,
   [sym_program] = sym_program,
   [sym_statements] = sym_statements,
   [sym_statement] = sym_statement,
@@ -160,7 +160,7 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = true,
   },
-  [sym_string] = {
+  [sym_string_normal] = {
     .visible = true,
     .named = true,
   },
@@ -610,15 +610,15 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
 
 static const TSLexMode ts_lex_modes[STATE_COUNT] = {
   [0] = {.lex_state = 0, .external_lex_state = 1},
-  [1] = {.lex_state = 0, .external_lex_state = 2},
-  [2] = {.lex_state = 0, .external_lex_state = 2},
-  [3] = {.lex_state = 0, .external_lex_state = 2},
-  [4] = {.lex_state = 0, .external_lex_state = 2},
-  [5] = {.lex_state = 0, .external_lex_state = 2},
-  [6] = {.lex_state = 0, .external_lex_state = 2},
-  [7] = {.lex_state = 0, .external_lex_state = 2},
-  [8] = {.lex_state = 0, .external_lex_state = 2},
-  [9] = {.lex_state = 0, .external_lex_state = 2},
+  [1] = {.lex_state = 0, .external_lex_state = 1},
+  [2] = {.lex_state = 0, .external_lex_state = 1},
+  [3] = {.lex_state = 0, .external_lex_state = 1},
+  [4] = {.lex_state = 0, .external_lex_state = 1},
+  [5] = {.lex_state = 0, .external_lex_state = 1},
+  [6] = {.lex_state = 0, .external_lex_state = 1},
+  [7] = {.lex_state = 0, .external_lex_state = 1},
+  [8] = {.lex_state = 0, .external_lex_state = 1},
+  [9] = {.lex_state = 0, .external_lex_state = 1},
   [10] = {.lex_state = 57},
   [11] = {.lex_state = 0},
   [12] = {.lex_state = 58},
@@ -628,21 +628,18 @@ static const TSLexMode ts_lex_modes[STATE_COUNT] = {
 
 enum {
   ts_external_token_char = 0,
-  ts_external_token_string = 1,
+  ts_external_token_string_normal = 1,
 };
 
 static const TSSymbol ts_external_scanner_symbol_map[EXTERNAL_TOKEN_COUNT] = {
   [ts_external_token_char] = sym_char,
-  [ts_external_token_string] = sym_string,
+  [ts_external_token_string_normal] = sym_string_normal,
 };
 
-static const bool ts_external_scanner_states[3][EXTERNAL_TOKEN_COUNT] = {
+static const bool ts_external_scanner_states[2][EXTERNAL_TOKEN_COUNT] = {
   [1] = {
     [ts_external_token_char] = true,
-    [ts_external_token_string] = true,
-  },
-  [2] = {
-    [ts_external_token_char] = true,
+    [ts_external_token_string_normal] = true,
   },
 };
 
@@ -664,7 +661,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [anon_sym_COLONnodoc_COLON] = ACTIONS(1),
     [anon_sym_COLONinherit_COLON] = ACTIONS(1),
     [sym_char] = ACTIONS(1),
-    [sym_string] = ACTIONS(1),
+    [sym_string_normal] = ACTIONS(1),
   },
   [1] = {
     [sym_program] = STATE(11),
@@ -687,6 +684,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_float] = ACTIONS(15),
     [anon_sym_POUND] = ACTIONS(3),
     [sym_char] = ACTIONS(7),
+    [sym_string_normal] = ACTIONS(7),
   },
   [2] = {
     [sym_statements] = STATE(7),
@@ -708,6 +706,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_float] = ACTIONS(15),
     [anon_sym_POUND] = ACTIONS(3),
     [sym_char] = ACTIONS(7),
+    [sym_string_normal] = ACTIONS(7),
   },
   [3] = {
     [sym_statements] = STATE(7),
@@ -729,6 +728,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_float] = ACTIONS(33),
     [anon_sym_POUND] = ACTIONS(3),
     [sym_char] = ACTIONS(21),
+    [sym_string_normal] = ACTIONS(21),
   },
   [4] = {
     [sym_comment] = STATE(4),
@@ -744,6 +744,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_float] = ACTIONS(38),
     [anon_sym_POUND] = ACTIONS(3),
     [sym_char] = ACTIONS(36),
+    [sym_string_normal] = ACTIONS(36),
   },
   [5] = {
     [sym_comment] = STATE(5),
@@ -759,6 +760,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_float] = ACTIONS(42),
     [anon_sym_POUND] = ACTIONS(3),
     [sym_char] = ACTIONS(40),
+    [sym_string_normal] = ACTIONS(40),
   },
   [6] = {
     [sym_comment] = STATE(6),
@@ -774,6 +776,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_float] = ACTIONS(46),
     [anon_sym_POUND] = ACTIONS(3),
     [sym_char] = ACTIONS(44),
+    [sym_string_normal] = ACTIONS(44),
   },
   [7] = {
     [sym_comment] = STATE(7),
@@ -789,6 +792,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_float] = ACTIONS(50),
     [anon_sym_POUND] = ACTIONS(3),
     [sym_char] = ACTIONS(48),
+    [sym_string_normal] = ACTIONS(48),
   },
   [8] = {
     [sym_comment] = STATE(8),
@@ -804,6 +808,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_float] = ACTIONS(54),
     [anon_sym_POUND] = ACTIONS(3),
     [sym_char] = ACTIONS(52),
+    [sym_string_normal] = ACTIONS(52),
   },
   [9] = {
     [sym_comment] = STATE(9),
@@ -819,6 +824,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_float] = ACTIONS(58),
     [anon_sym_POUND] = ACTIONS(3),
     [sym_char] = ACTIONS(56),
+    [sym_string_normal] = ACTIONS(56),
   },
 };
 

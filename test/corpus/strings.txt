@@ -1,0 +1,35 @@
+=======
+Strings
+=======
+
+"Hello World"
+
+"\""                  # double quote
+"\\"                  # backslash
+"\a"                  # alert
+"\b"                  # backspace
+"\e"                  # escape
+"\f"                  # form feed
+"\n"                  # newline
+"\r"                  # carriage return
+"\t"                  # tab
+"\v"                  # vertical tab
+"\377"                # octal ASCII character
+"\3771               # invalid octal (will try to match "\3771 (will consume "\377 (so 1 == integer)))
+-------
+
+(program 
+	(statements (statement (expression (string_normal))))
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(ERROR (UNEXPECTED '"'))
+	(statements (statement (expression (integer)))) (comment))

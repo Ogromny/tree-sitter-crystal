@@ -41,6 +41,10 @@
         {
           "type": "nil",
           "named": true
+        },
+        {
+          "type": "string_normal",
+          "named": true
         }
       ]
     }
@@ -125,6 +129,10 @@
   },
   {
     "type": "nil",
+    "named": true
+  },
+  {
+    "type": "string_normal",
     "named": true
   },
   {
