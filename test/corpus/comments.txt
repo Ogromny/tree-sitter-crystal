@@ -8,6 +8,7 @@ Comments
 ## test
 # :nodoc:
 # :faketaxi:
+# "test" 'test'
 
 --------
 
@@ -16,4 +17,5 @@ Comments
 	(comment)
 	(comment)
 	(comment_directive)
+	(comment)
 	(comment))

@@ -15,7 +15,14 @@ Strings
 "\t"                  # tab
 "\v"                  # vertical tab
 "\377"                # octal ASCII character
-"\3771               # invalid octal (will try to match "\3771 (will consume "\377 (so 1 == integer)))
+"\3771               # invalid octal, will become int because octal func will consume anti-slash
+"\111 \222 \333"  
+"\xFF"                # hexadecimal ASCII character
+"\xFF \xEE \xDD"                # hexadecimal ASCII character
+"\xAAA               
+"\uFFFF"              # hexadecimal unicode character
+"\u{0}"
+"\u{1 2 3 4 5 10FFFF}"
 -------
 
 (program 
@@ -32,4 +39,11 @@ Strings
 	(statements (statement (expression (string_normal)))) (comment)
 	(statements (statement (expression (string_normal)))) (comment)
 	(ERROR (UNEXPECTED '"'))
-	(statements (statement (expression (integer)))) (comment))
+	(statements (statement (expression (integer)))) (comment)
+	(statements (statement (expression (string_normal))))
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(ERROR (UNEXPECTED '"'))
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal))))
+	(statements (statement (expression (string_normal)))))

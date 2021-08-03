@@ -1,0 +1,10 @@
+==========
+Strings v2
+==========
+
+"\u{0 1 2 3 4 11 10FFFF 10ffff}" # blabla
+
+----------
+
+(program
+	(statements (statement (expression (string_normal)))) (comment))

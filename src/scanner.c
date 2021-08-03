@@ -202,6 +202,7 @@ bool handle_string_unicode(TSLexer *lexer)
     // TODO: prevent integer overflow ?
     uint64_t sum = 0;
 
+beg:
     while (iswxdigit(lexer->lookahead)) {
         ++characters;
 
@@ -211,25 +212,26 @@ bool handle_string_unicode(TSLexer *lexer)
         lexer->advance(lexer, false);
     }
 
+
     if (braced) {
-        lexer->advance(lexer, false);
-    }
-
-    if (lexer->lookahead == '\'') {
-        if ((!braced && characters != 4) || (braced && characters > 6)) {
+        if (characters > 6) {
+            lexer->advance(lexer, false);
             return false;
         }
 
-        if (sum > (braced ? 0x10FFFF : 0xFFFF)) {
-            return false;
+        if (iswspace(lexer->lookahead)) {
+            consume_whitespace(lexer);
+            sum = 0;
+			characters = 0;
+            goto beg;
         }
 
-        lexer->advance(lexer, false);
-        lexer->result_symbol = CHAR;
-        return true;
-    }
+		lexer->advance(lexer, false);
+    } else if (characters != 4) {
+		return false;
+	}
 
-    return false;
+    return true;
 }
 
 bool handle_string_hexadecimal(TSLexer *lexer)
@@ -270,7 +272,6 @@ bool handle_string_octal(TSLexer *lexer)
     }
 
     if (sum > 0777 || characters > 3) {
-		lexer->advance(lexer, false);
         return false;
     }
 
