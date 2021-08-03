@@ -23,6 +23,17 @@ Strings
 "\uFFFF"              # hexadecimal unicode character
 "\u{0}"
 "\u{1 2 3 4 5 10FFFF}"
+"\101" # => "A"
+"\123" # => "S"
+"\12"  # => "\n"
+"\1"   # string with one character with code point 1
+"\u0041"    # => "A"
+"\u{41}"    # => "A"
+"\u{1F52E}" # => "&#x1F52E;"
+"\u{48 45 4C 4C 4F}" # => "HELLO"
+"sum: #{a} + #{b} = #{a + b}" # => "sum: 1 + 2 = 3"
+"\#{a + b}"  # => "#{a + b}"
+
 -------
 
 (program 
@@ -45,5 +56,15 @@ Strings
 	(statements (statement (expression (string_normal)))) (comment)
 	(ERROR (UNEXPECTED '"'))
 	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal))))
-	(statements (statement (expression (string_normal)))))
+	(statements (statement (expression (string_normal)))) 
+	(statements (statement (expression (string_normal)))) 
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_normal)))) (comment))

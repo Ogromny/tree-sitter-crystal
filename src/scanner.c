@@ -189,6 +189,24 @@ char const *const string_end(char const *const sstart)
     }
 }
 
+bool handle_string_interpolation(TSLexer *lexer) {
+	if (lexer->lookahead != '{') {
+		return false;
+	}
+
+	while (lexer->lookahead != '}') {
+		if (!lexer->lookahead) {
+			// NOTE: probably EOF
+			return false;
+		}
+
+		lexer->advance(lexer, false);
+	}
+
+	lexer->advance(lexer, false);
+	return true;
+}
+
 bool handle_string_unicode(TSLexer *lexer)
 {
     // between {}
@@ -212,7 +230,6 @@ beg:
         lexer->advance(lexer, false);
     }
 
-
     if (braced) {
         if (characters > 6) {
             lexer->advance(lexer, false);
@@ -222,14 +239,14 @@ beg:
         if (iswspace(lexer->lookahead)) {
             consume_whitespace(lexer);
             sum = 0;
-			characters = 0;
+            characters = 0;
             goto beg;
         }
 
-		lexer->advance(lexer, false);
+        lexer->advance(lexer, false);
     } else if (characters != 4) {
-		return false;
-	}
+        return false;
+    }
 
     return true;
 }
@@ -296,6 +313,11 @@ bool handle_string_escape(TSLexer *lexer)
     if (lexer->lookahead == 'u') {
         lexer->advance(lexer, false);
         return handle_string_unicode(lexer);
+    }
+
+    if (lexer->lookahead == '#') {
+        lexer->advance(lexer, false);
+        return handle_string_interpolation(lexer);
     }
 
     for (int i = 0, j = sizeof(seq) / sizeof(*seq); i < j; ++i) {
