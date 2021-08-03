@@ -33,6 +33,27 @@ Strings
 "\u{48 45 4C 4C 4F}" # => "HELLO"
 "sum: #{a} + #{b} = #{a + b}" # => "sum: 1 + 2 = 3"
 "\#{a + b}"  # => "#{a + b}"
+%(hello ("world")) # => "hello (\"world\")"
+%[hello ["world"]] # => "hello [\"world\"]"
+%[[[]]]
+%{hello {"world"}} # => "hello {\"world\"}"
+%<hello <"world">> # => "hello <\"world\">"
+%<hello <"world">> # => "hello <\"world\">"
+%|hello "world"|   # => "hello \"world\""
+%q(hello ("world")) 
+%q[hello ["world"]] 
+%q[[[]]]
+%q{hello {"world"}}  
+%q<hello <"world">>  
+%q<hello <"world">>  
+%q|hello "world"|    
+%Q(hello ("world"))  
+%Q[hello ["world"]]  
+%Q[[[]]]
+%Q{hello {"world"}}  
+%Q<hello <"world">>  
+%Q<hello <"world">>  
+%Q|hello "world"|    
 
 -------
 
@@ -67,4 +88,25 @@ Strings
 	(statements (statement (expression (string_normal)))) (comment)
 	(statements (statement (expression (string_normal)))) (comment)
 	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment))
+	(statements (statement (expression (string_normal)))) (comment)
+	(statements (statement (expression (string_percent_literal)))) (comment)
+	(statements (statement (expression (string_percent_literal)))) (comment)
+	(statements (statement (expression (string_percent_literal))))
+	(statements (statement (expression (string_percent_literal)))) (comment)
+	(statements (statement (expression (string_percent_literal)))) (comment)
+	(statements (statement (expression (string_percent_literal)))) (comment)
+	(statements (statement (expression (string_percent_literal)))) (comment)
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal))))
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal))))
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal)))) 
+	(statements (statement (expression (string_percent_literal))))) 

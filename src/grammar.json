@@ -52,6 +52,10 @@
         {
           "type": "SYMBOL",
           "name": "string_normal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string_percent_literal"
         }
       ]
     },
@@ -165,6 +169,10 @@
     {
       "type": "SYMBOL",
       "name": "string_normal"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "string_percent_literal"
     }
   ],
   "inline": [],

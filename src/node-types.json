@@ -45,6 +45,10 @@
         {
           "type": "string_normal",
           "named": true
+        },
+        {
+          "type": "string_percent_literal",
+          "named": true
         }
       ]
     }
@@ -133,6 +137,10 @@
   },
   {
     "type": "string_normal",
+    "named": true
+  },
+  {
+    "type": "string_percent_literal",
     "named": true
   },
   {
