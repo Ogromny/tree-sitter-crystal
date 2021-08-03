@@ -32,4 +32,9 @@
 		- [x] Interpolation
 		- [x] Percent literal
 		- [x] Multi-line
-		- [-] Heredoc
+		- [x] Heredoc
+		- [ ] Multi-line Heredoc
+		- [x] Quoted heredoc
+
+## TODO
+Scanner state (for deeper highlighting (heredoc header, interpolation, ...))

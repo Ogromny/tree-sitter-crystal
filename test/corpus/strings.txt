@@ -73,6 +73,15 @@ XML
 Hello
   world
 STRING
+<<-STRING.upcase # => "HELLO"
+hello
+STRING
+<<-STRING) # => "HELLO WORLD"
+  Hello World
+STRING
+<<-'HERE' # => "hello \\n \#{world}"
+  hello \n #{world}
+  HERE
 
 -------
 
@@ -132,6 +141,9 @@ STRING
 	(statements (statement (expression (string_normal)))) (comment)
 	(statements (statement (expression (string_normal)))) (comment)
 	(statements (statement (expression (string_percent_literal))))
+	(statements (statement (expression (string_rdoc))))
+	(statements (statement (expression (string_rdoc))))
+	(statements (statement (expression (string_rdoc))))
 	(statements (statement (expression (string_rdoc))))
 	(statements (statement (expression (string_rdoc))))
 	(statements (statement (expression (string_rdoc)))))

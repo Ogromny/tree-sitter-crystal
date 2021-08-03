@@ -451,6 +451,12 @@ string_normal:
         }
 
         lexer->advance(lexer, false);
+		
+		bool quoted = false;
+		if (lexer->lookahead == '\'') {
+			quoted = true;
+			lexer->advance(lexer, false);
+		}
         // TODO: can overflow, maybe refactor in futur
         int heredoc[256] = {0};
 
@@ -460,7 +466,10 @@ string_normal:
             }
 
             if (!iswalnum(lexer->lookahead) && lexer->lookahead != '_') {
-                break;
+				if (quoted && lexer->lookahead == '\'') {
+					lexer->advance(lexer, false);
+				}
+				break;
             }
 
             heredoc[i] = lexer->lookahead;
@@ -470,9 +479,6 @@ string_normal:
         if (!(*heredoc)) {
             return false;
         }
-
-        DEBUG("heredoc: '%c%c%c%c'\n", heredoc[0], heredoc[1], heredoc[2],
-              heredoc[3])
 
         while (true) {
             if (!lexer->lookahead) {
@@ -489,7 +495,7 @@ string_normal:
                 }
 
                 if (valid) {
-                    break;
+					break;
                 }
             }
 
