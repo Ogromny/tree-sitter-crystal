@@ -168,6 +168,10 @@
               {
                 "type": "SYMBOL",
                 "name": "string_simple_interpolation"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "string_simple_uninterpolation"
               }
             ]
           }
@@ -196,6 +200,27 @@
       ]
     },
     "string_simple_interpolation_end": {
+      "type": "STRING",
+      "value": "}"
+    },
+    "string_simple_uninterpolation": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "string_simple_uninterpolation_start"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "nil"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string_simple_uninterpolation_end"
+        }
+      ]
+    },
+    "string_simple_uninterpolation_end": {
       "type": "STRING",
       "value": "}"
     }
@@ -228,6 +253,10 @@
     {
       "type": "SYMBOL",
       "name": "string_simple_interpolation_start"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "string_simple_uninterpolation_start"
     }
   ],
   "inline": [],

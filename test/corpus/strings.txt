@@ -2,8 +2,6 @@
 Strings
 =======
 
-"sum: #{a} + #{b} = #{a + b}" # => "sum: 1 + 2 = 3"
-"\#{a + b}"  # => "#{a + b}"
 %(hello ("world")) # => "hello (\"world\")"
 %[hello ["world"]] # => "hello [\"world\"]"
 %[[[]]]

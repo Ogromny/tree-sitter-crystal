@@ -12,6 +12,7 @@ enum TokenType {
     STRING_SIMPLE_CONTENT,
     STRING_SIMPLE_ESCAPE,
     STRING_SIMPLE_INTERPOLATION_START,
+    STRING_SIMPLE_UNINTERPOLATION_START,
 };
 
 #define DEBUG(...)                                              \
@@ -99,25 +100,6 @@ void consume_whitespace(TSLexer *lexer)
         lexer->advance(lexer, true);
     }
 }
-
-// bool handle_string_interpolation(TSLexer *lexer)
-// {
-//     if (lexer->lookahead != '{') {
-//         return false;
-//     }
-//
-//     while (lexer->lookahead != '}') {
-//         if (!lexer->lookahead) {
-//             // NOTE: probably EOF
-//             return false;
-//         }
-//
-//         lexer->advance(lexer, false);
-//     }
-//
-//     lexer->advance(lexer, false);
-//     return true;
-// }
 
 bool handle_string_hexadecimal(TSLexer *lexer)
 {
@@ -283,8 +265,8 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         lexer->advance(lexer, false);
 
         if (lexer->lookahead == '#' &&
-            valid_symbols[STRING_SIMPLE_INTERPOLATION_START]) {
-            goto string_simple_interpolation_start;
+            valid_symbols[STRING_SIMPLE_UNINTERPOLATION_START]) {
+            goto string_simple_uninterpolation_start;
         }
 
         if (!handle_char_escape(lexer, true)) {
@@ -296,16 +278,7 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
     }
 
     if (valid_symbols[STRING_SIMPLE_INTERPOLATION_START] &&
-        (lexer->lookahead == '#' || lexer->lookahead == '\\')) {
-        if (lexer->lookahead == '\\') {
-            lexer->advance(lexer, false);
-        }
-
-    string_simple_interpolation_start:
-        if (lexer->lookahead != '#') {
-            return false;
-        }
-
+        lexer->lookahead == '#') {
         lexer->advance(lexer, false);
         if (lexer->lookahead != '{') {
             return false;
@@ -313,6 +286,23 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
 
         lexer->advance(lexer, false);
         lexer->result_symbol = STRING_SIMPLE_INTERPOLATION_START;
+        return true;
+    }
+
+    if (valid_symbols[STRING_SIMPLE_UNINTERPOLATION_START] &&
+        lexer->lookahead == '\\') {
+        lexer->advance(lexer, false);
+        if (lexer->lookahead != '#') {
+            return false;
+        }
+    string_simple_uninterpolation_start:
+        lexer->advance(lexer, false);
+        if (lexer->lookahead != '{') {
+            return false;
+        }
+
+        lexer->advance(lexer, false);
+        lexer->result_symbol = STRING_SIMPLE_UNINTERPOLATION_START;
         return true;
     }
 

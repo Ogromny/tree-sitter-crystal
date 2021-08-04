@@ -9,6 +9,7 @@ module.exports = grammar({
 		$.string_simple_content,
 		$.string_simple_escape,
 		$.string_simple_interpolation_start,
+		$.string_simple_uninterpolation_start,
 		// $.string_normal,
 		// $.string_percent_literal,
 		// $.string_rdoc,
@@ -78,7 +79,8 @@ module.exports = grammar({
 				choice(
 					$.string_simple_content,
 					$.string_simple_escape,
-					$.string_simple_interpolation
+					$.string_simple_interpolation,
+					$.string_simple_uninterpolation
 				)
 			),
 			"\""
@@ -88,6 +90,12 @@ module.exports = grammar({
 			$.nil, // TODO: 
 			$.string_simple_interpolation_end
 		),
-		string_simple_interpolation_end: $ => "}"
+		string_simple_interpolation_end: $ => "}",
+		string_simple_uninterpolation: $ => seq(
+			$.string_simple_uninterpolation_start,
+			$.nil, // TODO: 
+			$.string_simple_uninterpolation_end
+		),
+		string_simple_uninterpolation_end: $ => "}"
 	}
 })

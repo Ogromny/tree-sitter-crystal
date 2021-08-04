@@ -143,6 +143,10 @@
         {
           "type": "string_simple_interpolation",
           "named": true
+        },
+        {
+          "type": "string_simple_uninterpolation",
+          "named": true
         }
       ]
     }
@@ -169,6 +173,39 @@
         }
       ]
     }
+  },
+  {
+    "type": "string_simple_interpolation_end",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "string_simple_uninterpolation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "nil",
+          "named": true
+        },
+        {
+          "type": "string_simple_uninterpolation_end",
+          "named": true
+        },
+        {
+          "type": "string_simple_uninterpolation_start",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string_simple_uninterpolation_end",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "\"",
@@ -215,15 +252,19 @@
     "named": true
   },
   {
-    "type": "string_simple_interpolation_end",
-    "named": true
-  },
-  {
     "type": "string_simple_interpolation_start",
     "named": true
   },
   {
+    "type": "string_simple_uninterpolation_start",
+    "named": true
+  },
+  {
     "type": "true",
+    "named": false
+  },
+  {
+    "type": "}",
     "named": false
   }
 ]
