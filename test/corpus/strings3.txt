@@ -28,6 +28,8 @@ Strings 3
 "\u{48 45 4C 4C 4F}" 
 "#{nil} test"
 "test \#{nil} test"
+"abc" \
+  "def"
 
 ---------
 
@@ -57,6 +59,6 @@ Strings 3
 	(statements (statement (expression (string (string_simple (string_simple_escape))))))
 	(statements (statement (expression (string (string_simple (string_simple_escape))))))
 	(statements (statement (expression (string (string_simple (string_simple_interpolation (string_simple_interpolation_start) (nil) (string_simple_interpolation_end)) (string_simple_content))))))
+	(statements (statement (expression (string (string_simple (string_simple_content) (string_simple_uninterpolation (string_simple_uninterpolation_start) (nil) (string_simple_uninterpolation_end)) (string_simple_content))))))
 	(statements (statement (expression (string (string_simple
-	(string_simple_content) (string_simple_uninterpolation
-	(string_simple_uninterpolation_start) (nil) (string_simple_uninterpolation_end)) (string_simple_content)))))))
+	(string_simple_content) (string_simple_content)))))))

@@ -1,5 +1,32 @@
 [
   {
+    "type": "",
+    "named": false,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "string_simple_content",
+          "named": true
+        },
+        {
+          "type": "string_simple_escape",
+          "named": true
+        },
+        {
+          "type": "string_simple_interpolation",
+          "named": true
+        },
+        {
+          "type": "string_simple_uninterpolation",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "bool",
     "named": true,
     "fields": {}
@@ -206,6 +233,10 @@
     "type": "string_simple_uninterpolation_end",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "",
+    "named": false
   },
   {
     "type": "\"",

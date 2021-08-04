@@ -83,7 +83,15 @@ module.exports = grammar({
 					$.string_simple_uninterpolation
 				)
 			),
-			"\""
+			"\"",
+			optional(
+				alias(
+					seq(
+						"\\",
+						$.string_simple
+					),
+				"")
+			)
 		),
 		string_simple_interpolation: $ => seq(
 			$.string_simple_interpolation_start,

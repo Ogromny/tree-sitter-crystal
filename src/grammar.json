@@ -179,6 +179,32 @@
         {
           "type": "STRING",
           "value": "\""
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "\\"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "string_simple"
+                  }
+                ]
+              },
+              "named": false,
+              "value": ""
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },
