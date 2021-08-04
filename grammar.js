@@ -3,13 +3,15 @@ module.exports = grammar({
 	extras: $ => [
 		/\s/, // whitespace
 		$.comment,
-		$.comment_directive,
 	],
 	externals: $ => [
 		$.char,
-		$.string_normal,
-		$.string_percent_literal,
-		$.string_rdoc,
+		$.string_simple_content,
+		$.string_simple_escape,
+		$.string_simple_interpolation_start,
+		// $.string_normal,
+		// $.string_percent_literal,
+		// $.string_rdoc,
 	],
 	rules: {
 		program: $ => repeat(
@@ -28,10 +30,32 @@ module.exports = grammar({
 			$.integer,
 			$.float,
 			$.char,
-			$.string_normal,
-			$.string_percent_literal,
-			$.string_rdoc
+			$.string,
+			//$.string_normal,
+			//$.string_percent_literal,
+			//$.string_rdoc
 		),
+
+		/**********
+		* COMMENT *
+		**********/
+
+		comment: $ => seq(
+			"#",
+			choice(
+				$.comment_directive,
+				/.*/
+			)
+		),
+		comment_directive: $ => choice(
+			":ditto:",
+			":nodoc:",
+			":inherit:"
+		),
+
+		/**********
+		* LITERAL *
+		**********/
 		
 		nil: $ => "nil",
 		bool: $ => choice(
@@ -45,19 +69,24 @@ module.exports = grammar({
 			/[+-]?0x[0-9a-fA-F_]+/,
 		),
 		float: $ => /[+-]?\d[\d_]*(\.\d[\d_]*)?((e-?\d+)|(f(32|64)))?/,
-
-		comment: $ => seq(
-			"#",
-			/.*/
+		string: $ => choice(
+			$.string_simple
 		),
-		comment_directive: $ => seq(
-			"#",
-			choice(
-				":ditto:",
-				":nodoc:",
-				":inherit:"
+		string_simple: $ => seq(
+			"\"",
+			repeat(
+				choice(
+					$.string_simple_content,
+					$.string_simple_escape,
+					$.string_simple_interpolation
+				)
 			),
-			/.*/
+			"\""
+		),
+		string_simple_interpolation: $ => seq(
+			$.string_simple_interpolation_start,
+			$.nil,
+			"}"
 		)
 	}
 })

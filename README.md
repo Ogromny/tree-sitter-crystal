@@ -2,6 +2,7 @@
 - [x] Comments
 	- [x] Normal
 	- [x] Directive
+	- [ ] Markdown, plain, crystal injection support
 - [x] Literals
 	- [x] Nil
 	- [x] Bool

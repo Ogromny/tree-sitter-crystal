@@ -1,1 +1,3 @@
-print %q|test test|
+# test
+print '\''
+print '\"'

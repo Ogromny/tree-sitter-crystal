@@ -16,6 +16,6 @@ Comments
 	(comment)
 	(comment)
 	(comment)
-	(comment_directive)
+	(comment (comment_directive))
 	(comment)
 	(comment))

@@ -51,15 +51,46 @@
         },
         {
           "type": "SYMBOL",
-          "name": "string_normal"
+          "name": "string"
+        }
+      ]
+    },
+    "comment": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "#"
         },
         {
-          "type": "SYMBOL",
-          "name": "string_percent_literal"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "comment_directive"
+            },
+            {
+              "type": "PATTERN",
+              "value": ".*"
+            }
+          ]
+        }
+      ]
+    },
+    "comment_directive": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": ":ditto:"
         },
         {
-          "type": "SYMBOL",
-          "name": "string_rdoc"
+          "type": "STRING",
+          "value": ":nodoc:"
+        },
+        {
+          "type": "STRING",
+          "value": ":inherit:"
         }
       ]
     },
@@ -105,46 +136,62 @@
       "type": "PATTERN",
       "value": "[+-]?\\d[\\d_]*(\\.\\d[\\d_]*)?((e-?\\d+)|(f(32|64)))?"
     },
-    "comment": {
-      "type": "SEQ",
+    "string": {
+      "type": "CHOICE",
       "members": [
         {
-          "type": "STRING",
-          "value": "#"
-        },
-        {
-          "type": "PATTERN",
-          "value": ".*"
+          "type": "SYMBOL",
+          "name": "string_simple"
         }
       ]
     },
-    "comment_directive": {
+    "string_simple": {
       "type": "SEQ",
       "members": [
         {
           "type": "STRING",
-          "value": "#"
+          "value": "\""
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": ":ditto:"
-            },
-            {
-              "type": "STRING",
-              "value": ":nodoc:"
-            },
-            {
-              "type": "STRING",
-              "value": ":inherit:"
-            }
-          ]
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "string_simple_content"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "string_simple_escape"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "string_simple_interpolation"
+              }
+            ]
+          }
         },
         {
-          "type": "PATTERN",
-          "value": ".*"
+          "type": "STRING",
+          "value": "\""
+        }
+      ]
+    },
+    "string_simple_interpolation": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "string_simple_interpolation_start"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "nil"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
         }
       ]
     }
@@ -157,10 +204,6 @@
     {
       "type": "SYMBOL",
       "name": "comment"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "comment_directive"
     }
   ],
   "conflicts": [],
@@ -172,15 +215,15 @@
     },
     {
       "type": "SYMBOL",
-      "name": "string_normal"
+      "name": "string_simple_content"
     },
     {
       "type": "SYMBOL",
-      "name": "string_percent_literal"
+      "name": "string_simple_escape"
     },
     {
       "type": "SYMBOL",
-      "name": "string_rdoc"
+      "name": "string_simple_interpolation_start"
     }
   ],
   "inline": [],

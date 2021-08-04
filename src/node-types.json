@@ -7,7 +7,17 @@
   {
     "type": "comment",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "comment_directive",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "comment_directive",
@@ -43,15 +53,7 @@
           "named": true
         },
         {
-          "type": "string_normal",
-          "named": true
-        },
-        {
-          "type": "string_percent_literal",
-          "named": true
-        },
-        {
-          "type": "string_rdoc",
+          "type": "string",
           "named": true
         }
       ]
@@ -108,6 +110,67 @@
     }
   },
   {
+    "type": "string",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "string_simple",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string_simple",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "string_simple_content",
+          "named": true
+        },
+        {
+          "type": "string_simple_escape",
+          "named": true
+        },
+        {
+          "type": "string_simple_interpolation",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string_simple_interpolation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "nil",
+          "named": true
+        },
+        {
+          "type": "string_simple_interpolation_start",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "\"",
+    "named": false
+  },
+  {
     "type": "#",
     "named": false
   },
@@ -140,19 +203,23 @@
     "named": true
   },
   {
-    "type": "string_normal",
+    "type": "string_simple_content",
     "named": true
   },
   {
-    "type": "string_percent_literal",
+    "type": "string_simple_escape",
     "named": true
   },
   {
-    "type": "string_rdoc",
+    "type": "string_simple_interpolation_start",
     "named": true
   },
   {
     "type": "true",
+    "named": false
+  },
+  {
+    "type": "}",
     "named": false
   }
 ]

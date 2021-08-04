@@ -9,9 +9,9 @@
 
 enum TokenType {
     CHAR,
-    STRING_NORMAL,
-    STRING_PERCENT_LITERAL,
-    STRING_RDOC,
+    STRING_SIMPLE_CONTENT,
+    STRING_SIMPLE_ESCAPE,
+    STRING_SIMPLE_INTERPOLATION_START,
 };
 
 #define DEBUG(...)                                              \
@@ -20,8 +20,13 @@ enum TokenType {
         fflush(stdout);                                         \
     }
 
+#define RETURN_FALSE_IF_EOF  \
+    if (!lexer->lookahead) { \
+        return false;        \
+    }
+
 // FIXME: really ugly
-inline int char_hex_to_hex(char c)
+int char_hex_to_hex(char c)
 {
     switch (c) {
     case '1':
@@ -66,7 +71,7 @@ inline int char_hex_to_hex(char c)
 }
 
 // FIXME: really ugly
-inline int char_oct_to_oct(char c)
+int char_oct_to_oct(char c)
 {
     switch (c) {
     case '1':
@@ -88,158 +93,42 @@ inline int char_oct_to_oct(char c)
     return 0;
 }
 
-inline void consume_whitespace(TSLexer *lexer)
+void consume_whitespace(TSLexer *lexer)
 {
     while (iswspace(lexer->lookahead)) {
         lexer->advance(lexer, true);
     }
 }
 
-bool handle_char_unicode(TSLexer *lexer)
-{
-    // between {}
-    bool braced = (lexer->lookahead == '{');
-    short characters = 0;
-
-    if (braced) {
-        lexer->advance(lexer, false);
-    }
-
-    // TODO: prevent integer overflow ?
-    uint64_t sum = 0;
-
-    while (iswxdigit(lexer->lookahead)) {
-        ++characters;
-
-        sum *= 0x10;
-        sum += char_hex_to_hex(lexer->lookahead);
-
-        lexer->advance(lexer, false);
-    }
-
-    if (braced) {
-        lexer->advance(lexer, false);
-    }
-
-    if (lexer->lookahead == '\'') {
-        if ((!braced && characters != 4) || (braced && characters > 6)) {
-            return false;
-        }
-
-        if (sum > (braced ? 0x10FFFF : 0xFFFF)) {
-            return false;
-        }
-
-        lexer->advance(lexer, false);
-        lexer->result_symbol = CHAR;
-        return true;
-    }
-
-    return false;
-}
-
-bool handle_char_escape(TSLexer *lexer)
-{
-    int seq[] = {
-        '\'', '\\', 'a', 'b', 'e', 'f', 'n', 'r', 't', 'v',
-    };
-
-    if (lexer->lookahead == 'u') {
-        lexer->advance(lexer, false);
-        return handle_char_unicode(lexer);
-    }
-
-    for (int i = 0, j = sizeof(seq) / sizeof(*seq); i < j; ++i) {
-        if (lexer->lookahead == seq[i]) {
-            lexer->advance(lexer, false);
-
-            if (lexer->lookahead != '\'') {
-                return false;
-            }
-            lexer->advance(lexer, false);
-            lexer->result_symbol = CHAR;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool handle_string_interpolation(TSLexer *lexer)
-{
-    if (lexer->lookahead != '{') {
-        return false;
-    }
-
-    while (lexer->lookahead != '}') {
-        if (!lexer->lookahead) {
-            // NOTE: probably EOF
-            return false;
-        }
-
-        lexer->advance(lexer, false);
-    }
-
-    lexer->advance(lexer, false);
-    return true;
-}
-
-bool handle_string_unicode(TSLexer *lexer)
-{
-    // between {}
-    bool braced = (lexer->lookahead == '{');
-    short characters = 0;
-
-    if (braced) {
-        lexer->advance(lexer, false);
-    }
-
-    // TODO: prevent integer overflow ?
-    uint64_t sum = 0;
-
-beg:
-    while (iswxdigit(lexer->lookahead)) {
-        ++characters;
-
-        sum *= 0x10;
-        sum += char_hex_to_hex(lexer->lookahead);
-
-        lexer->advance(lexer, false);
-    }
-
-    if (braced) {
-        if (characters > 6) {
-            lexer->advance(lexer, false);
-            return false;
-        }
-
-        if (iswspace(lexer->lookahead)) {
-            consume_whitespace(lexer);
-            sum = 0;
-            characters = 0;
-            goto beg;
-        }
-
-        lexer->advance(lexer, false);
-    } else if (characters != 4) {
-        return false;
-    }
-
-    return true;
-}
+// bool handle_string_interpolation(TSLexer *lexer)
+// {
+//     if (lexer->lookahead != '{') {
+//         return false;
+//     }
+//
+//     while (lexer->lookahead != '}') {
+//         if (!lexer->lookahead) {
+//             // NOTE: probably EOF
+//             return false;
+//         }
+//
+//         lexer->advance(lexer, false);
+//     }
+//
+//     lexer->advance(lexer, false);
+//     return true;
+// }
 
 bool handle_string_hexadecimal(TSLexer *lexer)
 {
-    // TODO: prevent integer overflow ?
+    int characters = 0;
     uint64_t sum = 0;
-    short characters = 0;
 
     while (iswxdigit(lexer->lookahead)) {
-        ++characters;
-
         sum *= 0x10;
         sum += char_hex_to_hex(lexer->lookahead);
 
+        ++characters;
         lexer->advance(lexer, false);
     }
 
@@ -252,16 +141,14 @@ bool handle_string_hexadecimal(TSLexer *lexer)
 
 bool handle_string_octal(TSLexer *lexer)
 {
-    // TODO: prevent integer overflow ?
+    int characters = 0;
     uint64_t sum = 0;
-    short characters = 0;
 
     while (lexer->lookahead >= '0' && lexer->lookahead <= '7') {
-        ++characters;
-
         sum *= 010;
         sum += char_oct_to_oct(lexer->lookahead);
 
+        ++characters;
         lexer->advance(lexer, false);
     }
 
@@ -272,29 +159,72 @@ bool handle_string_octal(TSLexer *lexer)
     return true;
 }
 
-bool handle_string_escape(TSLexer *lexer)
+bool handle_char_unicode(TSLexer *lexer, bool string)
 {
-    int seq[] = {
-        '\"', '\\', 'a', 'b', 'e', 'f', 'n', 'r', 't', 'v',
-    };
+    bool braced = false;
+    int characters = 0;
+    uint64_t sum = 0;
 
-    if (lexer->lookahead >= '0' && lexer->lookahead <= '7') {
-        return handle_string_octal(lexer);
+    if (lexer->lookahead == '{') {
+        braced = true;
+        lexer->advance(lexer, false);
     }
 
-    if (lexer->lookahead == 'x') {
+    // TODO: prevent integer overflow ?
+process:
+    while (iswxdigit(lexer->lookahead)) {
+        sum *= 0x10;
+        sum += char_hex_to_hex(lexer->lookahead);
+
+        ++characters;
         lexer->advance(lexer, false);
-        return handle_string_hexadecimal(lexer);
+    }
+
+    if (braced) {
+        if (!characters || characters > 6 || sum > 0x10FFFF) {
+            return false;
+        }
+
+        if (string && iswspace(lexer->lookahead)) {
+            consume_whitespace(lexer);
+            sum = 0;
+            characters = 0;
+            goto process;
+        }
+
+        lexer->advance(lexer, false);
+    } else if (characters != 4) {
+        return false;
+    }
+
+    return true;
+}
+
+bool handle_char_escape(TSLexer *lexer, bool string)
+{
+    int seq[] = {
+        '\\', 'a', 'b', 'e', 'f', 'n', 'r', 't', 'v',
+    };
+
+    if (string) {
+        if (lexer->lookahead >= '0' && lexer->lookahead <= '7') {
+            return handle_string_octal(lexer);
+        }
+
+        if (lexer->lookahead == 'x') {
+            lexer->advance(lexer, false);
+            return handle_string_hexadecimal(lexer);
+        }
     }
 
     if (lexer->lookahead == 'u') {
         lexer->advance(lexer, false);
-        return handle_string_unicode(lexer);
+        return handle_char_unicode(lexer, string);
     }
 
-    if (lexer->lookahead == '#') {
+    if (lexer->lookahead == (string ? '"' : '\'')) {
         lexer->advance(lexer, false);
-        return handle_string_interpolation(lexer);
+        return true;
     }
 
     for (int i = 0, j = sizeof(seq) / sizeof(*seq); i < j; ++i) {
@@ -333,179 +263,235 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
 
         if (lexer->lookahead == '\\') {
             lexer->advance(lexer, false);
-            return handle_char_escape(lexer);
+            if (!handle_char_escape(lexer, false)) {
+                return false;
+            }
+        } else {
+            lexer->advance(lexer, false);
         }
 
-        if (lexer->lookahead == '\r' || lexer->lookahead == '\n') {
+        if (lexer->lookahead != '\'') {
             return false;
         }
 
         lexer->advance(lexer, false);
-        if (lexer->lookahead == '\'') {
-            lexer->advance(lexer, false);
-            lexer->result_symbol = CHAR;
-            return true;
-        }
-
-        return false;
+        lexer->result_symbol = CHAR;
+        return true;
     }
 
-string_normal:
-    if (valid_symbols[STRING_NORMAL] && lexer->lookahead == '"') {
+    if (valid_symbols[STRING_SIMPLE_INTERPOLATION_START] &&
+        lexer->lookahead == '#') {
+        lexer->advance(lexer, false);
+        if (lexer->lookahead != '{') {
+            return false;
+        }
+
+        lexer->advance(lexer, false);
+        lexer->result_symbol = STRING_SIMPLE_INTERPOLATION_START;
+        return true;
+    }
+
+    if (valid_symbols[STRING_SIMPLE_ESCAPE] && lexer->lookahead == '\\') {
         lexer->advance(lexer, false);
 
-        while (lexer->lookahead != '"') {
-            if (!lexer->lookahead) {
-                // INFO: probably EOF
+        if (!handle_char_escape(lexer, true)) {
+            return false;
+        }
+
+        lexer->result_symbol = STRING_SIMPLE_ESCAPE;
+        return true;
+    }
+
+    if (valid_symbols[STRING_SIMPLE_CONTENT]) {
+        int characters = 0;
+
+        while (true) {
+            RETURN_FALSE_IF_EOF;
+
+            if (lexer->lookahead == '"') {
+                if (characters) {
+                    break;
+                }
+
+                // NOTE: empty string
                 return false;
             }
 
             if (lexer->lookahead == '\\') {
-                lexer->advance(lexer, false);
-                if (!handle_string_escape(lexer)) {
-                    return false;
-                }
+                break;
+            }
 
-                continue;
+            if (lexer->lookahead == '#') {
+                return false;
+                // TODO:
             }
 
             lexer->advance(lexer, false);
+            ++characters;
         }
 
-        lexer->advance(lexer, false);
-        lexer->mark_end(lexer);
+        lexer->result_symbol = STRING_SIMPLE_CONTENT;
+        return true;
+    }
 
-        consume_whitespace(lexer);
+    /*
+string_normal:
+if (valid_symbols[STRING_NORMAL] && lexer->lookahead == '"') {
+    lexer->advance(lexer, false);
+
+    while (lexer->lookahead != '"') {
+        if (!lexer->lookahead) {
+            // INFO: probably EOF
+            return false;
+        }
 
         if (lexer->lookahead == '\\') {
             lexer->advance(lexer, false);
-            consume_whitespace(lexer);
-            goto string_normal;
-        }
-
-        lexer->result_symbol = STRING_NORMAL;
-        return true;
-    }
-
-    if (valid_symbols[STRING_PERCENT_LITERAL] && lexer->lookahead == '%') {
-        lexer->advance(lexer, false);
-
-        if (lexer->lookahead == 'q' || lexer->lookahead == 'Q') {
-            lexer->advance(lexer, false);
-        }
-
-        int seq[] = {'(', '[', '{', '<', '|'};
-        int qes[] = {')', ']', '}', '>', '|'};
-        int s = 0;
-        int q = 0;
-        int depth = 0;
-
-        for (int i = 0, j = sizeof(seq) / sizeof(*seq); i < j; ++i) {
-            if (lexer->lookahead == seq[i]) {
-                s = seq[i];
-                q = qes[i];
-            }
-        }
-
-        if (!s) {
-            return false;
-        }
-
-        while (true) {
-            lexer->advance(lexer, false);
-
-            if (!lexer->lookahead) {
-                // NOTE: probably EOF
+            if (!handle_string_escape(lexer)) {
                 return false;
             }
 
-            if (lexer->lookahead == s) {
-                if (lexer->lookahead == q) {
-                    break;
-                }
+            continue;
+        }
 
-                ++depth;
-            }
+        lexer->advance(lexer, false);
+    }
 
+    lexer->advance(lexer, false);
+    lexer->mark_end(lexer);
+
+    consume_whitespace(lexer);
+
+    if (lexer->lookahead == '\\') {
+        lexer->advance(lexer, false);
+        consume_whitespace(lexer);
+        goto string_normal;
+    }
+
+    lexer->result_symbol = STRING_NORMAL;
+    return true;
+}
+
+if (valid_symbols[STRING_PERCENT_LITERAL] && lexer->lookahead == '%') {
+    lexer->advance(lexer, false);
+
+    if (lexer->lookahead == 'q' || lexer->lookahead == 'Q') {
+        lexer->advance(lexer, false);
+    }
+
+    int seq[] = {'(', '[', '{', '<', '|'};
+    int qes[] = {')', ']', '}', '>', '|'};
+    int s = 0;
+    int q = 0;
+    int depth = 0;
+
+    for (int i = 0, j = sizeof(seq) / sizeof(*seq); i < j; ++i) {
+        if (lexer->lookahead == seq[i]) {
+            s = seq[i];
+            q = qes[i];
+        }
+    }
+
+    if (!s) {
+        return false;
+    }
+
+    while (true) {
+        lexer->advance(lexer, false);
+
+        if (!lexer->lookahead) {
+            // NOTE: probably EOF
+            return false;
+        }
+
+        if (lexer->lookahead == s) {
             if (lexer->lookahead == q) {
-                if (!(depth--)) {
-                    break;
-                }
+                break;
             }
+
+            ++depth;
         }
 
-        lexer->advance(lexer, false);
-        lexer->result_symbol = STRING_PERCENT_LITERAL;
-        return true;
+        if (lexer->lookahead == q) {
+            if (!(depth--)) {
+                break;
+            }
+        }
     }
 
-    if (valid_symbols[STRING_RDOC] && lexer->lookahead == '<') {
-        lexer->advance(lexer, false);
-        if (lexer->lookahead != '<') {
-            return false;
-        }
+    lexer->advance(lexer, false);
+    lexer->result_symbol = STRING_PERCENT_LITERAL;
+    return true;
+}
 
-        lexer->advance(lexer, false);
-        if (lexer->lookahead != '-') {
-            return false;
-        }
+if (valid_symbols[STRING_RDOC] && lexer->lookahead == '<') {
+    lexer->advance(lexer, false);
+    if (lexer->lookahead != '<') {
+        return false;
+    }
 
-        lexer->advance(lexer, false);
-		
-		bool quoted = false;
-		if (lexer->lookahead == '\'') {
-			quoted = true;
-			lexer->advance(lexer, false);
-		}
-        // TODO: can overflow, maybe refactor in futur
-        int heredoc[256] = {0};
+    lexer->advance(lexer, false);
+    if (lexer->lookahead != '-') {
+        return false;
+    }
 
-        for (int i = 0, j = sizeof(heredoc) / sizeof(*heredoc); i < j; ++i) {
-            if (!i && !iswalpha(lexer->lookahead)) {
-                return false;
-            }
+    lexer->advance(lexer, false);
 
-            if (!iswalnum(lexer->lookahead) && lexer->lookahead != '_') {
-				if (quoted && lexer->lookahead == '\'') {
-					lexer->advance(lexer, false);
-				}
-				break;
-            }
-
-            heredoc[i] = lexer->lookahead;
-            lexer->advance(lexer, false);
-        }
-
-        if (!(*heredoc)) {
-            return false;
-        }
-
-        while (true) {
-            if (!lexer->lookahead) {
-                // NOTE: probably EOF
-                return false;
-            }
-
-            if (lexer->lookahead == *heredoc) {
-                bool valid = true;
-                for (int i = 1, j = sizeof(heredoc) / sizeof(*heredoc);
-                     i < j && valid && heredoc[i]; ++i) {
+            bool quoted = false;
+            if (lexer->lookahead == '\'') {
+                    quoted = true;
                     lexer->advance(lexer, false);
-                    valid = lexer->lookahead == heredoc[i];
-                }
+            }
+    // TODO: can overflow, maybe refactor in futur
+    int heredoc[256] = {0};
 
-                if (valid) {
-					break;
-                }
+    for (int i = 0, j = sizeof(heredoc) / sizeof(*heredoc); i < j; ++i) {
+        if (!i && !iswalpha(lexer->lookahead)) {
+            return false;
+        }
+
+        if (!iswalnum(lexer->lookahead) && lexer->lookahead != '_') {
+                            if (quoted && lexer->lookahead == '\'') {
+                                    lexer->advance(lexer, false);
+                            }
+                            break;
+        }
+
+        heredoc[i] = lexer->lookahead;
+        lexer->advance(lexer, false);
+    }
+
+    if (!(*heredoc)) {
+        return false;
+    }
+
+    while (true) {
+        if (!lexer->lookahead) {
+            // NOTE: probably EOF
+            return false;
+        }
+
+        if (lexer->lookahead == *heredoc) {
+            bool valid = true;
+            for (int i = 1, j = sizeof(heredoc) / sizeof(*heredoc);
+                 i < j && valid && heredoc[i]; ++i) {
+                lexer->advance(lexer, false);
+                valid = lexer->lookahead == heredoc[i];
             }
 
-            lexer->advance(lexer, false);
+            if (valid) {
+                                    break;
+            }
         }
 
         lexer->advance(lexer, false);
-        lexer->result_symbol = STRING_RDOC;
-        return true;
     }
+
+    lexer->advance(lexer, false);
+    lexer->result_symbol = STRING_RDOC;
+    return true;
+}
+    */
 
     return false;
 }

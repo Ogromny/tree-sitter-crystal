@@ -2,35 +2,6 @@
 Strings
 =======
 
-"Hello World"
-
-"\""                  # double quote
-"\\"                  # backslash
-"\a"                  # alert
-"\b"                  # backspace
-"\e"                  # escape
-"\f"                  # form feed
-"\n"                  # newline
-"\r"                  # carriage return
-"\t"                  # tab
-"\v"                  # vertical tab
-"\377"                # octal ASCII character
-"\3771               # invalid octal, will become int because octal func will consume anti-slash
-"\111 \222 \333"  
-"\xFF"                # hexadecimal ASCII character
-"\xFF \xEE \xDD"                # hexadecimal ASCII character
-"\xAAA               
-"\uFFFF"              # hexadecimal unicode character
-"\u{0}"
-"\u{1 2 3 4 5 10FFFF}"
-"\101" # => "A"
-"\123" # => "S"
-"\12"  # => "\n"
-"\1"   # string with one character with code point 1
-"\u0041"    # => "A"
-"\u{41}"    # => "A"
-"\u{1F52E}" # => "&#x1F52E;"
-"\u{48 45 4C 4C 4F}" # => "HELLO"
 "sum: #{a} + #{b} = #{a + b}" # => "sum: 1 + 2 = 3"
 "\#{a + b}"  # => "#{a + b}"
 %(hello ("world")) # => "hello (\"world\")"
@@ -85,65 +56,4 @@ STRING
 
 -------
 
-(program 
-	(statements (statement (expression (string_normal))))
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(ERROR (UNEXPECTED '"'))
-	(statements (statement (expression (integer)))) (comment)
-	(statements (statement (expression (string_normal))))
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(ERROR (UNEXPECTED '"'))
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) 
-	(statements (statement (expression (string_normal)))) 
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_percent_literal)))) (comment)
-	(statements (statement (expression (string_percent_literal)))) (comment)
-	(statements (statement (expression (string_percent_literal))))
-	(statements (statement (expression (string_percent_literal)))) (comment)
-	(statements (statement (expression (string_percent_literal)))) (comment)
-	(statements (statement (expression (string_percent_literal)))) (comment)
-	(statements (statement (expression (string_percent_literal)))) (comment)
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal))))
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal))))
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal)))) 
-	(statements (statement (expression (string_percent_literal))))
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_normal)))) (comment)
-	(statements (statement (expression (string_percent_literal))))
-	(statements (statement (expression (string_rdoc))))
-	(statements (statement (expression (string_rdoc))))
-	(statements (statement (expression (string_rdoc))))
-	(statements (statement (expression (string_rdoc))))
-	(statements (statement (expression (string_rdoc))))
-	(statements (statement (expression (string_rdoc)))))
+(program)

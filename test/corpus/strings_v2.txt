@@ -2,9 +2,21 @@
 Strings v2
 ==========
 
-"\u{0 1 2 3 4 11 10FFFF 10ffff}" # blabla
+"test"
+""
+"test test"
+"\uFFFF"
+"\uFFFF \uFFFF"
+"\uFFFF \uFFFF test \uFFFF"
+"test \uFFFF \uFFFF test \uFFFF"
 
 ----------
 
 (program
-	(statements (statement (expression (string_normal)))) (comment))
+	(statements (statement (expression (string (string_simple (string_simple_content))))))
+	(statements (statement (expression (string (string_simple)))))
+	(statements (statement (expression (string (string_simple (string_simple_content))))))
+	(statements (statement (expression (string (string_simple (string_simple_escape))))))
+	(statements (statement (expression (string (string_simple (string_simple_escape) (string_simple_escape))))))
+	(statements (statement (expression (string (string_simple (string_simple_escape) (string_simple_escape) (string_simple_content) (string_simple_escape))))))
+	(statements (statement (expression (string (string_simple (string_simple_content) (string_simple_escape) (string_simple_escape) (string_simple_content) (string_simple_escape)))))))
