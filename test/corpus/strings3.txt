@@ -30,6 +30,9 @@ Strings 3
 "test \#{nil} test"
 "abc" \
   "def"
+"hello \
+ world, \
+ no newlines" # same as "hello world, no newlines"
 
 ---------
 
@@ -60,5 +63,5 @@ Strings 3
 	(statements (statement (expression (string (string_simple (string_simple_escape))))))
 	(statements (statement (expression (string (string_simple (string_simple_interpolation (string_simple_interpolation_start) (nil) (string_simple_interpolation_end)) (string_simple_content))))))
 	(statements (statement (expression (string (string_simple (string_simple_content) (string_simple_uninterpolation (string_simple_uninterpolation_start) (nil) (string_simple_uninterpolation_end)) (string_simple_content))))))
-	(statements (statement (expression (string (string_simple
-	(string_simple_content) (string_simple_content)))))))
+	(statements (statement (expression (string (string_simple (string_simple_content) (string_simple_content))))))
+	(statements (statement (expression (string (string_simple (string_simple_content) (string_simple_escape) (string_simple_content) (string_simple_escape) (string_simple_content)))))) (comment))

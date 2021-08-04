@@ -197,6 +197,12 @@ bool handle_char_escape(TSLexer *lexer, bool string)
             lexer->advance(lexer, false);
             return handle_string_hexadecimal(lexer);
         }
+
+		// NOTE: multiline in "" via backslash
+		if (iswspace(lexer->lookahead)) {
+			lexer->advance(lexer, false);
+			return true;
+		}
     }
 
     if (lexer->lookahead == 'u') {
