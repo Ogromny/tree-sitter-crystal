@@ -160,6 +160,10 @@
           "named": true
         },
         {
+          "type": "string_simple_interpolation_end",
+          "named": true
+        },
+        {
           "type": "string_simple_interpolation_start",
           "named": true
         }
@@ -211,15 +215,15 @@
     "named": true
   },
   {
+    "type": "string_simple_interpolation_end",
+    "named": true
+  },
+  {
     "type": "string_simple_interpolation_start",
     "named": true
   },
   {
     "type": "true",
-    "named": false
-  },
-  {
-    "type": "}",
     "named": false
   }
 ]

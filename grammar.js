@@ -85,8 +85,9 @@ module.exports = grammar({
 		),
 		string_simple_interpolation: $ => seq(
 			$.string_simple_interpolation_start,
-			$.nil,
-			"}"
-		)
+			$.nil, // TODO: 
+			$.string_simple_interpolation_end
+		),
+		string_simple_interpolation_end: $ => "}"
 	}
 })

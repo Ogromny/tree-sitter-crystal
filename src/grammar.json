@@ -190,10 +190,14 @@
           "name": "nil"
         },
         {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "string_simple_interpolation_end"
         }
       ]
+    },
+    "string_simple_interpolation_end": {
+      "type": "STRING",
+      "value": "}"
     }
   },
   "extras": [

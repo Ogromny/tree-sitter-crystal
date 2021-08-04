@@ -31,7 +31,7 @@ enum {
   aux_sym_integer_token4 = 12,
   sym_float = 13,
   anon_sym_DQUOTE = 14,
-  anon_sym_RBRACE = 15,
+  sym_string_simple_interpolation_end = 15,
   sym_char = 16,
   sym_string_simple_content = 17,
   sym_string_simple_escape = 18,
@@ -67,7 +67,7 @@ static const char * const ts_symbol_names[] = {
   [aux_sym_integer_token4] = "integer_token4",
   [sym_float] = "float",
   [anon_sym_DQUOTE] = "\"",
-  [anon_sym_RBRACE] = "}",
+  [sym_string_simple_interpolation_end] = "string_simple_interpolation_end",
   [sym_char] = "char",
   [sym_string_simple_content] = "string_simple_content",
   [sym_string_simple_escape] = "string_simple_escape",
@@ -103,7 +103,7 @@ static const TSSymbol ts_symbol_map[] = {
   [aux_sym_integer_token4] = aux_sym_integer_token4,
   [sym_float] = sym_float,
   [anon_sym_DQUOTE] = anon_sym_DQUOTE,
-  [anon_sym_RBRACE] = anon_sym_RBRACE,
+  [sym_string_simple_interpolation_end] = sym_string_simple_interpolation_end,
   [sym_char] = sym_char,
   [sym_string_simple_content] = sym_string_simple_content,
   [sym_string_simple_escape] = sym_string_simple_escape,
@@ -184,9 +184,9 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = false,
   },
-  [anon_sym_RBRACE] = {
+  [sym_string_simple_interpolation_end] = {
     .visible = true,
-    .named = false,
+    .named = true,
   },
   [sym_char] = {
     .visible = true,
@@ -656,7 +656,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       ACCEPT_TOKEN(anon_sym_DQUOTE);
       END_STATE();
     case 84:
-      ACCEPT_TOKEN(anon_sym_RBRACE);
+      ACCEPT_TOKEN(sym_string_simple_interpolation_end);
       END_STATE();
     default:
       return false;
@@ -738,7 +738,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [aux_sym_integer_token4] = ACTIONS(1),
     [sym_float] = ACTIONS(1),
     [anon_sym_DQUOTE] = ACTIONS(1),
-    [anon_sym_RBRACE] = ACTIONS(1),
+    [sym_string_simple_interpolation_end] = ACTIONS(1),
     [sym_char] = ACTIONS(1),
     [sym_string_simple_content] = ACTIONS(1),
     [sym_string_simple_escape] = ACTIONS(1),
@@ -1070,7 +1070,7 @@ static const uint16_t ts_small_parse_table[] = {
     ACTIONS(3), 1,
       anon_sym_POUND,
     ACTIONS(105), 1,
-      anon_sym_RBRACE,
+      sym_string_simple_interpolation_end,
     STATE(20), 1,
       sym_comment,
   [329] = 3,

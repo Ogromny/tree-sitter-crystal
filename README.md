@@ -1,3 +1,5 @@
+# VERY WIP
+
 ## Done
 - [x] Comments
 	- [x] Normal
@@ -39,3 +41,4 @@
 
 ## TODO
 Scanner state (for deeper highlighting (heredoc header, interpolation, ...))
+

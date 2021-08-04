@@ -6,7 +6,6 @@ literals2
 '\u{10FFFF}' # hexadecimal unicode character
 '\uFFFF'     # hexadecimal unicode character
 '\u{10FFFF}' # hexadecimal unicode character
-'\u{}'
 
 --------
 
@@ -14,5 +13,4 @@ literals2
 	(statements (statement (expression (char)))) (comment)
 	(statements (statement (expression (char)))) (comment)
 	(statements (statement (expression (char)))) (comment)
-	(statements (statement (expression (char)))) (comment)
-	(ERROR (UNEXPECTED ''')))
+	(statements (statement (expression (char)))) (comment))
