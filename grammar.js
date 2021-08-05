@@ -1,17 +1,19 @@
 module.exports = grammar({
 	name: "crystal",
 	extras: $ => [
-		/\s/, // whitespace
+		/\s/,
 		$.comment,
 	],
 	externals: $ => [
 		$.char,
-		$.string_simple_content,
-		$.string_simple_escape,
-		$.string_simple_interpolation_start,
-		$.string_simple_uninterpolation_start,
-		// $.string_normal,
-		// $.string_percent_literal,
+
+		$.string_content,
+		$.string_escape,
+		$.string_percent_start,
+		$.string_percent_end,
+		// $.string_percent_literal_interpolated_start,
+		//$.string_percent_literal_end
+
 		// $.string_rdoc,
 	],
 	rules: {
@@ -57,7 +59,7 @@ module.exports = grammar({
 		/**********
 		* LITERAL *
 		**********/
-		
+
 		nil: $ => "nil",
 		bool: $ => choice(
 			"true",
@@ -71,16 +73,17 @@ module.exports = grammar({
 		),
 		float: $ => /[+-]?\d[\d_]*(\.\d[\d_]*)?((e-?\d+)|(f(32|64)))?/,
 		string: $ => choice(
-			$.string_simple
+			$.string_literal,
+			$.string_percent,
+			// $.string_percent_literal_interpolated
 		),
-		string_simple: $ => seq(
+		string_literal: $ => seq(
 			"\"",
 			repeat(
 				choice(
-					$.string_simple_content,
-					$.string_simple_escape,
-					$.string_simple_interpolation,
-					$.string_simple_uninterpolation
+					$.string_content,
+					$.string_escape,
+					$.string_interpolation
 				)
 			),
 			"\"",
@@ -88,22 +91,36 @@ module.exports = grammar({
 				alias(
 					seq(
 						"\\",
-						$.string_simple
+						$.string_literal
 					),
-				"")
+					"")
 			)
 		),
-		string_simple_interpolation: $ => seq(
-			$.string_simple_interpolation_start,
-			$.nil, // TODO: 
-			$.string_simple_interpolation_end
+		string_interpolation: $ => seq(
+			/\\?\#\{/,
+			$.nil,
+			"}"
 		),
-		string_simple_interpolation_end: $ => "}",
-		string_simple_uninterpolation: $ => seq(
-			$.string_simple_uninterpolation_start,
-			$.nil, // TODO: 
-			$.string_simple_uninterpolation_end
-		),
-		string_simple_uninterpolation_end: $ => "}"
+		string_percent: $ => seq(
+			$.string_percent_start,
+			// repeat(
+			// 	choice(
+			// 		$.string_content,
+			// 		$.string_escape,
+			// 		$.string_interpolation
+			// 	)
+			// ),
+			$.string_percent_end
+		)
+		//	string_percent_literal_interpolated: $ => {
+		//		$.string_percent_literal_interpolated_start,
+		//		repeat(
+		//			choice(
+		//				$.string_simple_interpolation,
+		//				/.*/
+		//			)
+		//		),
+		//		$.string_percent_literal_end
+		//	}
 	}
 })

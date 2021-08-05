@@ -1,0 +1,11 @@
+===
+CCC
+===
+
+%q{}
+%q{test}
+
+---
+(program
+	(statements (statement (expression (string (string_percent (string_percent_start) (string_percent_end))))))
+	(statements (statement (expression (string (string_percent (string_percent_start) (string_content) (string_percent_end)))))))

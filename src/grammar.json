@@ -141,11 +141,15 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "string_simple"
+          "name": "string_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string_percent"
         }
       ]
     },
-    "string_simple": {
+    "string_literal": {
       "type": "SEQ",
       "members": [
         {
@@ -159,19 +163,15 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "string_simple_content"
+                "name": "string_content"
               },
               {
                 "type": "SYMBOL",
-                "name": "string_simple_escape"
+                "name": "string_escape"
               },
               {
                 "type": "SYMBOL",
-                "name": "string_simple_interpolation"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "string_simple_uninterpolation"
+                "name": "string_interpolation"
               }
             ]
           }
@@ -194,7 +194,7 @@
                   },
                   {
                     "type": "SYMBOL",
-                    "name": "string_simple"
+                    "name": "string_literal"
                   }
                 ]
               },
@@ -208,47 +208,35 @@
         }
       ]
     },
-    "string_simple_interpolation": {
+    "string_interpolation": {
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "string_simple_interpolation_start"
+          "type": "PATTERN",
+          "value": "\\\\?\\#\\{"
         },
         {
           "type": "SYMBOL",
           "name": "nil"
         },
         {
-          "type": "SYMBOL",
-          "name": "string_simple_interpolation_end"
+          "type": "STRING",
+          "value": "}"
         }
       ]
     },
-    "string_simple_interpolation_end": {
-      "type": "STRING",
-      "value": "}"
-    },
-    "string_simple_uninterpolation": {
+    "string_percent": {
       "type": "SEQ",
       "members": [
         {
           "type": "SYMBOL",
-          "name": "string_simple_uninterpolation_start"
+          "name": "string_percent_start"
         },
         {
           "type": "SYMBOL",
-          "name": "nil"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "string_simple_uninterpolation_end"
+          "name": "string_percent_end"
         }
       ]
-    },
-    "string_simple_uninterpolation_end": {
-      "type": "STRING",
-      "value": "}"
     }
   },
   "extras": [
@@ -270,19 +258,19 @@
     },
     {
       "type": "SYMBOL",
-      "name": "string_simple_content"
+      "name": "string_content"
     },
     {
       "type": "SYMBOL",
-      "name": "string_simple_escape"
+      "name": "string_escape"
     },
     {
       "type": "SYMBOL",
-      "name": "string_simple_interpolation_start"
+      "name": "string_percent_start"
     },
     {
       "type": "SYMBOL",
-      "name": "string_simple_uninterpolation_start"
+      "name": "string_percent_end"
     }
   ],
   "inline": [],

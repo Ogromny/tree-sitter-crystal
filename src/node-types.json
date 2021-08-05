@@ -8,19 +8,15 @@
       "required": false,
       "types": [
         {
-          "type": "string_simple_content",
+          "type": "string_content",
           "named": true
         },
         {
-          "type": "string_simple_escape",
+          "type": "string_escape",
           "named": true
         },
         {
-          "type": "string_simple_interpolation",
-          "named": true
-        },
-        {
-          "type": "string_simple_uninterpolation",
+          "type": "string_interpolation",
           "named": true
         }
       ]
@@ -145,14 +141,33 @@
       "required": true,
       "types": [
         {
-          "type": "string_simple",
+          "type": "string_literal",
+          "named": true
+        },
+        {
+          "type": "string_percent",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "string_simple",
+    "type": "string_interpolation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "nil",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string_literal",
     "named": true,
     "fields": {},
     "children": {
@@ -160,26 +175,22 @@
       "required": false,
       "types": [
         {
-          "type": "string_simple_content",
+          "type": "string_content",
           "named": true
         },
         {
-          "type": "string_simple_escape",
+          "type": "string_escape",
           "named": true
         },
         {
-          "type": "string_simple_interpolation",
-          "named": true
-        },
-        {
-          "type": "string_simple_uninterpolation",
+          "type": "string_interpolation",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "string_simple_interpolation",
+    "type": "string_percent",
     "named": true,
     "fields": {},
     "children": {
@@ -187,52 +198,15 @@
       "required": true,
       "types": [
         {
-          "type": "nil",
+          "type": "string_percent_end",
           "named": true
         },
         {
-          "type": "string_simple_interpolation_end",
-          "named": true
-        },
-        {
-          "type": "string_simple_interpolation_start",
+          "type": "string_percent_start",
           "named": true
         }
       ]
     }
-  },
-  {
-    "type": "string_simple_interpolation_end",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "string_simple_uninterpolation",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "nil",
-          "named": true
-        },
-        {
-          "type": "string_simple_uninterpolation_end",
-          "named": true
-        },
-        {
-          "type": "string_simple_uninterpolation_start",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "string_simple_uninterpolation_end",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "",
@@ -275,19 +249,19 @@
     "named": true
   },
   {
-    "type": "string_simple_content",
+    "type": "string_content",
     "named": true
   },
   {
-    "type": "string_simple_escape",
+    "type": "string_escape",
     "named": true
   },
   {
-    "type": "string_simple_interpolation_start",
+    "type": "string_percent_end",
     "named": true
   },
   {
-    "type": "string_simple_uninterpolation_start",
+    "type": "string_percent_start",
     "named": true
   },
   {
