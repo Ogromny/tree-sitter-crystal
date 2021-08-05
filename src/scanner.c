@@ -11,11 +11,10 @@ enum TokenType {
     CHAR,
     STRING_CONTENT,
     STRING_ESCAPE,
+    STRING_INTERPOLATION_START,
+    STRING_INTERPOLATION_END,
     STRING_PERCENT_START,
     STRING_PERCENT_END,
-    // STRING_PERCENT_LITERAL_INTERPOLATED_START,
-    // STRING_PERCENT_LITERAL_CONTENT,
-    // STRING_PERCENT_LITERAL_END,
 };
 
 typedef struct {
@@ -307,6 +306,8 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
 {
     consume_whitespace(lexer);
 
+    State *state = (State *)payload;
+
     if (valid_symbols[CHAR] && lexer->lookahead == '\'') {
         lexer->advance(lexer, false);
 
@@ -331,6 +332,11 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
     if (valid_symbols[STRING_ESCAPE] && lexer->lookahead == '\\') {
         lexer->advance(lexer, false);
 
+        if (lexer->lookahead == '#' &&
+            valid_symbols[STRING_INTERPOLATION_START]) {
+            goto string_interpolation_start;
+        }
+
         if (!handle_char_escape(lexer, true)) {
             return false;
         }
@@ -339,56 +345,30 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         return true;
     }
 
-    if (valid_symbols[STRING_CONTENT]) {
-        int characters = 0;
-        int prec = 0;
-        State *state = (State *)payload;
-
-        while (true) {
-            RETURN_FALSE_IF_EOF;
-
-            if (state->string_percent) {
-                if (lexer->lookahead == state->string_percent->start) {
-                    ++state->string_percent->depth;
-                } else if (lexer->lookahead == state->string_percent->end) {
-					if (state->string_percent->depth == 1) {
-						break;
-					}
-
-					--state->string_percent->depth;
-                }
-                DEBUG("\nSTRING_CONTENT\n")
-                DEBUG("\tstart: '%c'\n", state->string_percent->start)
-                DEBUG("\tend: '%c'\n", state->string_percent->end)
-                DEBUG("\tdepth: '%d'\n", state->string_percent->depth)
-            }
-
-            if (lexer->lookahead == '"' && (!state->string_percent)) {
-                if (characters) {
-                    break;
-                }
-
-                // NOTE: empty string
-                return false;
-            }
-
-            if (lexer->lookahead == '\\') {
-                break;
-            }
-
-            if (lexer->lookahead == '#') {
-                lexer->mark_end(lexer);
-            }
-            if (prec == '#' && lexer->lookahead == '{') {
-                return false;
-            }
-
-            prec = lexer->lookahead;
+string_interpolation_start:
+    if (valid_symbols[STRING_INTERPOLATION_START] &&
+        (lexer->lookahead == '\\' || lexer->lookahead == '#')) {
+        if (lexer->lookahead == '\\') {
             lexer->advance(lexer, false);
-            ++characters;
         }
 
-        lexer->result_symbol = STRING_CONTENT;
+        if (lexer->lookahead != '#') {
+            return false;
+        }
+
+        lexer->advance(lexer, false);
+        if (lexer->lookahead != '{') {
+            return false;
+        }
+
+        lexer->advance(lexer, false);
+        lexer->result_symbol = STRING_INTERPOLATION_START;
+        return true;
+    }
+
+    if (valid_symbols[STRING_INTERPOLATION_END] && lexer->lookahead == '}') {
+        lexer->advance(lexer, false);
+        lexer->result_symbol = STRING_INTERPOLATION_END;
         return true;
     }
 
@@ -416,8 +396,6 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
             return false;
         }
 
-        State *state = (State *)payload;
-
         if (state->string_percent) {
             free(state->string_percent);
         }
@@ -432,23 +410,69 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         return true;
     }
 
-    if (valid_symbols[STRING_PERCENT_END]) {
-        State *state = (State *)payload;
-
-		if (lexer->lookahead != state->string_percent->end) {
-			return false;
-		}
-
-		if (--state->string_percent->depth) {
-			return false;
-		}
+    if (valid_symbols[STRING_PERCENT_END] && state->string_percent &&
+        lexer->lookahead == state->string_percent->end) {
+        if (--state->string_percent->depth) {
+            return false;
+        }
 
         lexer->advance(lexer, false);
         lexer->result_symbol = STRING_PERCENT_END;
         return true;
     }
 
-    // if (valid_symbols[STRING_PERCENT_LITERAL_END] )
+    if (valid_symbols[STRING_CONTENT]) {
+        int characters = 0;
+        int prec = 0;
+
+        while (true) {
+            RETURN_FALSE_IF_EOF;
+
+			// FIXME: ugly AF
+            if (state->string_percent) {
+                if (lexer->lookahead == state->string_percent->start) {
+					if (state->string_percent->start == state->string_percent->end) {
+						break;
+					}
+                    ++state->string_percent->depth;
+                } else if (lexer->lookahead == state->string_percent->end) {
+                    if (state->string_percent->depth == 1) {
+                        break;
+                    }
+
+                    --state->string_percent->depth;
+                }
+            }
+
+            if (lexer->lookahead == '"' && (!state->string_percent)) {
+                if (characters) {
+                    break;
+                }
+
+                // NOTE: empty string
+                return false;
+            }
+
+            if (lexer->lookahead == '\\') {
+                break;
+            }
+
+            if (lexer->lookahead == '#') {
+                break;
+                lexer->mark_end(lexer);
+            }
+            if (prec == '#' && lexer->lookahead == '{') {
+                return false;
+            }
+
+            prec = lexer->lookahead;
+            lexer->advance(lexer, false);
+            ++characters;
+        }
+
+        lexer->result_symbol = STRING_CONTENT;
+        return true;
+    }
 
     return false;
 }

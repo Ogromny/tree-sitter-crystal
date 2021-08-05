@@ -156,11 +156,19 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
           "type": "nil",
+          "named": true
+        },
+        {
+          "type": "string_interpolation_end",
+          "named": true
+        },
+        {
+          "type": "string_interpolation_start",
           "named": true
         }
       ]
@@ -197,6 +205,18 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "string_content",
+          "named": true
+        },
+        {
+          "type": "string_escape",
+          "named": true
+        },
+        {
+          "type": "string_interpolation",
+          "named": true
+        },
         {
           "type": "string_percent_end",
           "named": true
@@ -257,6 +277,14 @@
     "named": true
   },
   {
+    "type": "string_interpolation_end",
+    "named": true
+  },
+  {
+    "type": "string_interpolation_start",
+    "named": true
+  },
+  {
     "type": "string_percent_end",
     "named": true
   },
@@ -266,10 +294,6 @@
   },
   {
     "type": "true",
-    "named": false
-  },
-  {
-    "type": "}",
     "named": false
   }
 ]

@@ -163,7 +163,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "string_content"
+                "name": "string_interpolation"
               },
               {
                 "type": "SYMBOL",
@@ -171,7 +171,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "string_interpolation"
+                "name": "string_content"
               }
             ]
           }
@@ -212,16 +212,16 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "PATTERN",
-          "value": "\\\\?\\#\\{"
+          "type": "SYMBOL",
+          "name": "string_interpolation_start"
         },
         {
           "type": "SYMBOL",
           "name": "nil"
         },
         {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "string_interpolation_end"
         }
       ]
     },
@@ -231,6 +231,26 @@
         {
           "type": "SYMBOL",
           "name": "string_percent_start"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "string_interpolation"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "string_escape"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "string_content"
+              }
+            ]
+          }
         },
         {
           "type": "SYMBOL",
@@ -263,6 +283,14 @@
     {
       "type": "SYMBOL",
       "name": "string_escape"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "string_interpolation_start"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "string_interpolation_end"
     },
     {
       "type": "SYMBOL",
