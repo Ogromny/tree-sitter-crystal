@@ -9,4 +9,5 @@
 (float) @float
 (char) @character
 
-
+(string) @string
+(string_escape) @string.escape
