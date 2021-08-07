@@ -33,11 +33,6 @@ typedef struct {
         fflush(stdout);                                         \
     }
 
-#define RETURN_FALSE_IF_EOF  \
-    if (!lexer->lookahead) { \
-        return false;        \
-    }
-
 // FIXME: really ugly
 int char_hex_to_hex(char c)
 {
@@ -106,46 +101,6 @@ int char_oct_to_oct(char c)
     return 0;
 }
 
-bool consume_string_percent(TSLexer *lexer)
-{
-    int seq[] = {'(', '[', '{', '<', '|'};
-    int qes[] = {')', ']', '}', '>', '|'};
-    int s = 0;
-    int q = 0;
-    int d = 0;
-
-    for (int i = 0, j = sizeof(seq) / sizeof(*seq); i < j; ++i) {
-        if (lexer->lookahead == seq[i]) {
-            s = seq[i];
-            q = qes[i];
-        }
-    }
-
-    if (!s) {
-        return false;
-    }
-
-    while (true) {
-        lexer->advance(lexer, false);
-
-        RETURN_FALSE_IF_EOF
-
-        if (lexer->lookahead == s) {
-            if (lexer->lookahead == q) {
-                break;
-            }
-
-            ++d;
-        }
-
-        if (lexer->lookahead == q) {
-            if (!(d--)) {
-                break;
-            }
-        }
-    }
-}
-
 void consume_whitespace(TSLexer *lexer)
 {
     while (iswspace(lexer->lookahead)) {
@@ -204,8 +159,8 @@ bool handle_char_unicode(TSLexer *lexer, bool string)
         lexer->advance(lexer, false);
     }
 
-    // TODO: prevent integer overflow ?
 process:
+    // TODO: prevent integer overflow ?
     while (iswxdigit(lexer->lookahead)) {
         sum *= 0x10;
         sum += char_hex_to_hex(lexer->lookahead);
@@ -219,19 +174,39 @@ process:
             return false;
         }
 
-        if (string && iswspace(lexer->lookahead)) {
-            consume_whitespace(lexer);
+		bool suffix_spaced = false;
+		if (iswspace(lexer->lookahead)) {
+			suffix_spaced = true;
+
+			while (iswspace(lexer->lookahead)) {
+				lexer->advance(lexer, false);
+			}
+		}
+
+        if (string && iswxdigit(lexer->lookahead)) {
             sum = 0;
             characters = 0;
             goto process;
         }
 
-        lexer->advance(lexer, false);
-    } else if (characters != 4) {
+		// NOTE: cannot have space before }
+		if (suffix_spaced) {
+			return false;
+		}
+
+        if (lexer->lookahead == '}') {
+            lexer->advance(lexer, false);
+            return true;
+        }
+
         return false;
     }
 
-    return true;
+    if (characters == 4) {
+        return true;
+    }
+
+    return false;
 }
 
 bool handle_char_escape(TSLexer *lexer, bool string)
@@ -338,7 +313,7 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         }
 
         if (!handle_char_escape(lexer, true)) {
-            return false;
+			return false;
         }
 
         lexer->result_symbol = STRING_ESCAPE;
@@ -421,19 +396,23 @@ string_interpolation_start:
         return true;
     }
 
+string_content:
     if (valid_symbols[STRING_CONTENT]) {
         int characters = 0;
         int prec = 0;
 
         while (true) {
-            RETURN_FALSE_IF_EOF;
+            if (lexer->eof(lexer)) {
+				return false;
+			}
 
-			// FIXME: ugly AF
+            // FIXME: ugly AF
             if (state->string_percent) {
                 if (lexer->lookahead == state->string_percent->start) {
-					if (state->string_percent->start == state->string_percent->end) {
-						break;
-					}
+                    if (state->string_percent->start ==
+                        state->string_percent->end) {
+                        break;
+                    }
                     ++state->string_percent->depth;
                 } else if (lexer->lookahead == state->string_percent->end) {
                     if (state->string_percent->depth == 1) {

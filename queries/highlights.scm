@@ -11,3 +11,5 @@
 
 (string) @string
 (string_escape) @string.escape
+(string_interpolation_start) @string.special
+(string_interpolation_end) @string.special
