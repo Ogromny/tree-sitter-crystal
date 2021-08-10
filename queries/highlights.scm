@@ -13,3 +13,7 @@
 (string_escape) @string.escape
 (string_interpolation_start) @string.special
 (string_interpolation_end) @string.special
+; TODO: \#{...}
+(string_percent
+	(string_percent_start) @string.special
+	(string_percent_end) @string.special)

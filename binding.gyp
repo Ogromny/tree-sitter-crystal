@@ -10,6 +10,7 @@
         "bindings/node/binding.cc",
         "src/parser.c",
         "src/scanner.c",
+		"src/state.h"
         # If your language uses an external scanner, add it here.
       ],
       "cflags_c": [

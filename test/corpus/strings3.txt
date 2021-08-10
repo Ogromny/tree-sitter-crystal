@@ -27,20 +27,20 @@ Strings 3
 "\u{1F52E}" 
 "\u{48 45 4C 4C 4F}" 
 "#{nil} test"
-"test \#{nil} test"
-"abc" \
-  "def"
-"hello \
- world, \
- no newlines" # same as "hello world, no newlines"
-%(hello ("world")) # => "hello (\"world\")"
-%[hello ["world"]] # => "hello [\"world\"]"
-%{hello {"world"}} # => "hello {\"world\"}"
-%<hello <"world">> # => "hello <\"world\">"
-%|hello "world"|   # => "hello \"world\""
-
-%q(hello \n #{nil}) 
-%Q(hello \n #{nil})
+"test  test"
+# "abc" \
+#   "def"
+# "hello \
+#  world, \
+#  no newlines" # same as "hello world, no newlines"
+# %(hello ("world")) # => "hello (\"world\")"
+# %[hello ["world"]] # => "hello [\"world\"]"
+# %{hello {"world"}} # => "hello {\"world\"}"
+# %<hello <"world">> # => "hello <\"world\">"
+# %|hello "world"|   # => "hello \"world\""
+# 
+# %q(hello \n #{nil}) 
+# %Q(hello \n #{nil})
 
 ---------
 

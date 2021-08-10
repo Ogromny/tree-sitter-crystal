@@ -88,6 +88,12 @@ false
 "\u{41}"    # => "A"
 "\u{1F52E}" # => "&#x1F52E;"
 "\u{48 45 4C 4C 4F}" # => "HELLO"
-"sum: #{nil}"
-
+"#{nil}"
+"\#{nil}"
+%(hello ("world")) # => "hello (\"world\")"
+%[hello ["world"]] # => "hello [\"world\"]"
+%{hello {"world"}} # => "hello {\"world\"}"
+%<hello <"world">> # => "hello <\"world\">"
+%<hello>
+"a 12 \#{ nil } 123 #{nil} #"
 
