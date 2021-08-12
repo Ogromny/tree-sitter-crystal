@@ -119,7 +119,7 @@ bool handle_char_escape(TSLexer *lexer, bool string)
         return handle_char_unicode(lexer, string);
     }
 
-	if (string) {
+    if (string) {
         if (CURRENT_CHAR >= '0' && CURRENT_CHAR <= '7') {
             return handle_string_octal(lexer);
         }
@@ -129,9 +129,9 @@ bool handle_char_escape(TSLexer *lexer, bool string)
             return handle_string_hexadecimal(lexer);
         }
 
-		CONSUME_CHAR;
-		return true;
-	}
+        CONSUME_CHAR;
+        return true;
+    }
 
     static int escapables[] = {'\'', '\\', 'a', 'b', 'e',
                                'f',  'n',  'r', 't', 'v'};
@@ -197,24 +197,18 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         return true;
     }
 
+    // strings
     if (valid_symbols[STRING_CONTENT] || valid_symbols[STRING_ESCAPE]) {
-        if (CURRENT_CHAR == '\\') {
+        if (valid_symbols[STRING_ESCAPE] && CURRENT_CHAR == '\\') {
             CONSUME_CHAR;
 
-            if (valid_symbols[STRING_ESCAPE]) {
-                if (!handle_char_escape(lexer, true)) {
-                    return false;
-                }
-
-                lexer->result_symbol = STRING_ESCAPE;
-                return true;
+            if (!handle_char_escape(lexer, true)) {
+                return false;
             }
-        }
 
-		if (CURRENT_CHAR == '#') {
-			// NOTE: probably an interpolation will be handled in the grammar
-			return false;
-		}
+            lexer->result_symbol = STRING_ESCAPE;
+            return true;
+        }
 
         if (valid_symbols[STRING_CONTENT]) {
             int chars = 0;

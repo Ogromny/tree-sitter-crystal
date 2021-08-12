@@ -15,6 +15,7 @@ typedef struct {
 
 typedef struct {
     StringPercent sp;
+	bool interpolation;
 } State;
 
 State *state_new(void) { return (State *)calloc(1, sizeof(State)); }

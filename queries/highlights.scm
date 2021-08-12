@@ -1,6 +1,6 @@
 ; comments
-(comment_directive) @annotation
-(comment) @comment
+ (comment
+ 	((comment_directive) @annotation)*) @comment
 
 ; literals
 (nil) @variable.builtin
