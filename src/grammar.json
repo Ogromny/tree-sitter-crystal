@@ -212,16 +212,16 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "string_interpolation_start"
+          "type": "STRING",
+          "value": "#{"
         },
         {
           "type": "SYMBOL",
           "name": "nil"
         },
         {
-          "type": "SYMBOL",
-          "name": "string_interpolation_end"
+          "type": "STRING",
+          "value": "}"
         }
       ]
     },
@@ -283,14 +283,6 @@
     {
       "type": "SYMBOL",
       "name": "string_escape"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "string_interpolation_start"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "string_interpolation_end"
     },
     {
       "type": "SYMBOL",

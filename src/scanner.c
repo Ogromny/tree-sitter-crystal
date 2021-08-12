@@ -13,10 +13,6 @@ enum TokenType {
     CHAR,
     STRING_CONTENT,
     STRING_ESCAPE,
-    STRING_INTERPOLATION_START,
-    STRING_INTERPOLATION_END,
-    // STRING_PERCENT_START,
-    // STRING_PERCENT_END,
 };
 
 #define DEBUG(...)                                              \
@@ -100,7 +96,6 @@ check:
             return false;
         }
 
-        DEBUG("unicode segment valid\n");
         // NOTE: cannot have leading whitespace
         if (!IS_WHITESPACE && CURRENT_CHAR == '}') {
             CONSUME_CHAR;
@@ -108,10 +103,9 @@ check:
         }
 
         while (IS_WHITESPACE) {
-            CONSUME_WHITESPACE;
+            lexer->advance(lexer, false);
         }
 
-        DEBUG("spaced\n");
         goto check;
     }
 
@@ -120,7 +114,12 @@ check:
 
 bool handle_char_escape(TSLexer *lexer, bool string)
 {
-    if (string) {
+    if (CURRENT_CHAR == 'u') {
+        CONSUME_CHAR;
+        return handle_char_unicode(lexer, string);
+    }
+
+	if (string) {
         if (CURRENT_CHAR >= '0' && CURRENT_CHAR <= '7') {
             return handle_string_octal(lexer);
         }
@@ -130,21 +129,12 @@ bool handle_char_escape(TSLexer *lexer, bool string)
             return handle_string_hexadecimal(lexer);
         }
 
-        // NOTE: multiline in "" via backslash
-    }
+		CONSUME_CHAR;
+		return true;
+	}
 
-    if (CURRENT_CHAR == 'u') {
-        CONSUME_CHAR;
-        return handle_char_unicode(lexer, string);
-    }
-
-    // NOTE: self escape
-    if (CURRENT_CHAR == (string ? '"' : '\'')) {
-        CONSUME_CHAR;
-        return true;
-    }
-
-    static int escapables[] = {'\\', 'a', 'b', 'e', 'f', 'n', 'r', 't', 'v'};
+    static int escapables[] = {'\'', '\\', 'a', 'b', 'e',
+                               'f',  'n',  'r', 't', 'v'};
     for (int i = 0, j = ARRAY_SIZE(escapables); i < j; ++i) {
         if (CURRENT_CHAR != escapables[i]) {
             continue;
@@ -207,29 +197,9 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         return true;
     }
 
-    if (valid_symbols[STRING_INTERPOLATION_END] && CURRENT_CHAR == '}') {
-        CONSUME_CHAR;
-        lexer->result_symbol = STRING_INTERPOLATION_END;
-        return true;
-    }
-
-    if (valid_symbols[STRING_CONTENT] || STRING_ESCAPE ||
-        STRING_INTERPOLATION_START) {
+    if (valid_symbols[STRING_CONTENT] || valid_symbols[STRING_ESCAPE]) {
         if (CURRENT_CHAR == '\\') {
             CONSUME_CHAR;
-
-            if (valid_symbols[STRING_INTERPOLATION_START] &&
-                CURRENT_CHAR == '#') {
-                CONSUME_CHAR;
-
-                if (CURRENT_CHAR != '{') {
-                    return false;
-                }
-
-                CONSUME_CHAR;
-                lexer->result_symbol = STRING_INTERPOLATION_START;
-                return true;
-            }
 
             if (valid_symbols[STRING_ESCAPE]) {
                 if (!handle_char_escape(lexer, true)) {
@@ -240,6 +210,11 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
                 return true;
             }
         }
+
+		if (CURRENT_CHAR == '#') {
+			// NOTE: probably an interpolation will be handled in the grammar
+			return false;
+		}
 
         if (valid_symbols[STRING_CONTENT]) {
             int chars = 0;

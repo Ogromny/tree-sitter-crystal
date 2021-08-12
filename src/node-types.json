@@ -156,19 +156,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "nil",
-          "named": true
-        },
-        {
-          "type": "string_interpolation_end",
-          "named": true
-        },
-        {
-          "type": "string_interpolation_start",
           "named": true
         }
       ]
@@ -241,6 +233,10 @@
     "named": false
   },
   {
+    "type": "#{",
+    "named": false
+  },
+  {
     "type": ":ditto:",
     "named": false
   },
@@ -277,14 +273,6 @@
     "named": true
   },
   {
-    "type": "string_interpolation_end",
-    "named": true
-  },
-  {
-    "type": "string_interpolation_start",
-    "named": true
-  },
-  {
     "type": "string_percent_end",
     "named": true
   },
@@ -294,6 +282,10 @@
   },
   {
     "type": "true",
+    "named": false
+  },
+  {
+    "type": "}",
     "named": false
   }
 ]
