@@ -13,6 +13,7 @@ enum TokenType {
     CHAR,
     STRING_CONTENT,
     STRING_ESCAPE,
+    STRING_INTERPOLATION_START,
 };
 
 #define DEBUG(...)                                              \
@@ -101,6 +102,10 @@ check:
             CONSUME_CHAR;
             return true;
         }
+
+		if (!string) {
+			return false;
+		}
 
         while (IS_WHITESPACE) {
             lexer->advance(lexer, false);
@@ -198,7 +203,8 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
     }
 
     // strings
-    if (valid_symbols[STRING_CONTENT] || valid_symbols[STRING_ESCAPE]) {
+    if (valid_symbols[STRING_CONTENT] || valid_symbols[STRING_ESCAPE] ||
+        STRING_INTERPOLATION_START) {
         if (valid_symbols[STRING_ESCAPE] && CURRENT_CHAR == '\\') {
             CONSUME_CHAR;
 
@@ -210,25 +216,48 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
             return true;
         }
 
-        if (valid_symbols[STRING_CONTENT]) {
+        if (valid_symbols[STRING_CONTENT] ||
+            valid_symbols[STRING_INTERPOLATION_START]) {
             int chars = 0;
 
-            for (;; ++chars, CONSUME_CHAR) {
-                if (lexer->eof(lexer)) {
-                    return false;
-                }
+            if (valid_symbols[STRING_INTERPOLATION_START] &&
+                CURRENT_CHAR == '#') {
+                CONSUME_CHAR;
+                ++chars;
 
-                if (CURRENT_CHAR == '"') {
-                    if (chars) {
-                        break;
-                    }
-
-                    return false;
+                if (CURRENT_CHAR == '{') {
+                    CONSUME_CHAR;
+                    lexer->result_symbol = STRING_INTERPOLATION_START;
+                    return true;
                 }
             }
 
-            lexer->result_symbol = STRING_CONTENT;
-            return true;
+            if (valid_symbols[STRING_CONTENT]) {
+                for (;; ++chars, CONSUME_CHAR) {
+                    if (lexer->eof(lexer)) {
+                        return false;
+                    }
+
+                    if (CURRENT_CHAR == '"') {
+                        if (chars) {
+                            break;
+                        }
+
+                        return false;
+                    }
+
+                    if (CURRENT_CHAR == '\\') {
+                        break;
+                    }
+
+                    if (CURRENT_CHAR == '#') {
+                        break;
+                    }
+                }
+
+                lexer->result_symbol = STRING_CONTENT;
+                return true;
+            }
         }
     }
 

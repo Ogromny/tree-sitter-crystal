@@ -2,9 +2,7 @@
 DDD
 ===
 
-# lol
-# :ditto:
-"# :ditto:"
+"#{nil}"
 
 ---
 

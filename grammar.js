@@ -9,6 +9,7 @@ module.exports = grammar({
 
 		$.string_content,
 		$.string_escape,
+		$.string_interpolation_start,
 		$.string_percent_start,
 		$.string_percent_end,
 		// $.string_percent_literal_interpolated_start,
@@ -94,7 +95,10 @@ module.exports = grammar({
 			)
 		),
 		string_interpolation: $ => seq(
-			"#{",
+			alias(
+				$.string_interpolation_start,
+				""
+			),
 			$.nil,
 			"}"
 		),

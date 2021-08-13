@@ -233,10 +233,6 @@
     "named": false
   },
   {
-    "type": "#{",
-    "named": false
-  },
-  {
     "type": ":ditto:",
     "named": false
   },

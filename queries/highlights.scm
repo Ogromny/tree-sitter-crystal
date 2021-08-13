@@ -11,6 +11,7 @@
 
 (string_literal 
 	[
+	 	(string_content) @string
 		(string_escape) @string.escape
 		(string_interpolation) @string.special
 	]*) @string
