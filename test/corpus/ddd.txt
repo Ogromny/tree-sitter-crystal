@@ -2,8 +2,32 @@
 DDD
 ===
 
-"#{nil}"
+%(hello ("world")) # => "hello (\"world\")"
+%[hello ["world"]] # => "hello [\"world\"]"
+%{hello {"world"}} # => "hello {\"world\"}"
+%<hello <"world">> # => "hello <\"world\">"
+%|hello "world"|   # => "hello \"world\""
+%q(hello \n #{nil}) # => "hello \\n \#{name}"
+%Q(hello \n #{nil}) # => "hello \n world"
+"hello
+      world" # => "hello\n      world"
+"hello " \
+"world, " \
+"no newlines" # same as "hello world, no newlines"
+"hello \
+     world, \
+     no newlines" # same as "hello world, no newlines"
 
 ---
 
-(program)
+(program
+	(statements (statement (expression (string (string_percent (string_percent_start) (string_content) (string_percent_end)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_percent_start) (string_content) (string_percent_end)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_percent_start) (string_content) (string_percent_end)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_percent_start) (string_content) (string_percent_end)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_percent_start) (string_content) (string_percent_end)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_percent_start) (string_content) (string_escape) (string_interpolation (nil)) (string_percent_end)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_percent_start) (string_content) (string_escape) (string_interpolation (nil)) (string_percent_end)))))) (comment)
+	(statements (statement (expression (string (string_literal (string_content)))))) (comment)
+	(statements (statement (expression (string (string_literal (string_content) (string_leading_backslash) (string_content) (string_leading_backslash) (string_content)))))) (comment)
+	(statements (statement (expression (string (string_literal (string_content) (string_escape) (string_content) (string_escape) (string_content)))))) (comment))

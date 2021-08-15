@@ -1,28 +1,5 @@
 [
   {
-    "type": "",
-    "named": false,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "string_content",
-          "named": true
-        },
-        {
-          "type": "string_escape",
-          "named": true
-        },
-        {
-          "type": "string_interpolation",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "bool",
     "named": true,
     "fields": {}
@@ -185,6 +162,10 @@
         {
           "type": "string_interpolation",
           "named": true
+        },
+        {
+          "type": "string_leading_backslash",
+          "named": true
         }
       ]
     }
@@ -266,6 +247,10 @@
   },
   {
     "type": "string_escape",
+    "named": true
+  },
+  {
+    "type": "string_leading_backslash",
     "named": true
   },
   {

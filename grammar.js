@@ -12,8 +12,6 @@ module.exports = grammar({
 		$.string_interpolation_start,
 		$.string_percent_start,
 		$.string_percent_end,
-		// $.string_percent_literal_interpolated_start,
-		//$.string_percent_literal_end
 
 		// $.string_rdoc,
 	],
@@ -73,9 +71,17 @@ module.exports = grammar({
 		string: $ => choice(
 			$.string_literal,
 			$.string_percent,
-			// $.string_percent_literal_interpolated
 		),
 		string_literal: $ => seq(
+			$._string_literal,
+			repeat(
+				seq(
+					$.string_leading_backslash,
+					$._string_literal,
+				)
+			)
+		),
+		_string_literal: $ => seq(
 			"\"",
 			repeat(
 				choice(
@@ -85,15 +91,8 @@ module.exports = grammar({
 				)
 			),
 			"\"",
-			optional(
-				alias(
-					seq(
-						"\\",
-						$.string_literal
-					),
-					"")
-			)
 		),
+		string_leading_backslash: $ => "\\",
 		string_interpolation: $ => seq(
 			alias(
 				$.string_interpolation_start,

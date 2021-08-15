@@ -14,6 +14,8 @@ enum TokenType {
     STRING_CONTENT,
     STRING_ESCAPE,
     STRING_INTERPOLATION_START,
+    STRING_PERCENT_START,
+    STRING_PERCENT_END,
 };
 
 #define DEBUG(...)                                              \
@@ -103,9 +105,9 @@ check:
             return true;
         }
 
-		if (!string) {
-			return false;
-		}
+        if (!string) {
+            return false;
+        }
 
         while (IS_WHITESPACE) {
             lexer->advance(lexer, false);
@@ -204,7 +206,8 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
 
     // strings
     if (valid_symbols[STRING_CONTENT] || valid_symbols[STRING_ESCAPE] ||
-        STRING_INTERPOLATION_START) {
+        STRING_INTERPOLATION_START || valid_symbols[STRING_PERCENT_START] ||
+        valid_symbols[STRING_PERCENT_END]) {
         if (valid_symbols[STRING_ESCAPE] && CURRENT_CHAR == '\\') {
             CONSUME_CHAR;
 
@@ -217,7 +220,9 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         }
 
         if (valid_symbols[STRING_CONTENT] ||
-            valid_symbols[STRING_INTERPOLATION_START]) {
+            valid_symbols[STRING_INTERPOLATION_START] ||
+            valid_symbols[STRING_PERCENT_START] ||
+            valid_symbols[STRING_PERCENT_END]) {
             int chars = 0;
 
             if (valid_symbols[STRING_INTERPOLATION_START] &&
@@ -232,13 +237,50 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
                 }
             }
 
+            if (valid_symbols[STRING_PERCENT_START] && CURRENT_CHAR == '%' &&
+                !state->sp.start) {
+                CONSUME_CHAR;
+				++chars;
+
+                if (CURRENT_CHAR == 'q' || CURRENT_CHAR == 'Q') {
+                    CONSUME_CHAR;
+					++chars;
+                }
+
+                char *delimiters[] = {"()", "[]", "{}", "<>", "||"};
+				for (int i = 0, j = ARRAY_SIZE(delimiters); i < j; ++i) {
+					if (CURRENT_CHAR == delimiters[i][0]) {
+						state->sp.start = delimiters[i][0];
+						state->sp.end = delimiters[i][1];
+						state->sp.depth = 0;
+					}
+				}
+
+				if (state->sp.start) {
+					CONSUME_CHAR;
+					lexer->result_symbol = STRING_PERCENT_START;
+					return true;
+				}
+            }
+
+			if (valid_symbols[STRING_PERCENT_END] && CURRENT_CHAR == state->sp.end) {
+				if (!state->sp.depth) {
+					state->sp.start = 0;
+					state->sp.end = 0;
+
+					CONSUME_CHAR;
+					lexer->result_symbol = STRING_PERCENT_END;
+					return true;
+				}
+			}
+
             if (valid_symbols[STRING_CONTENT]) {
                 for (;; ++chars, CONSUME_CHAR) {
                     if (lexer->eof(lexer)) {
                         return false;
                     }
 
-                    if (CURRENT_CHAR == '"') {
+                    if (CURRENT_CHAR == '"' && !state->sp.start) {
                         if (chars) {
                             break;
                         }
@@ -253,6 +295,23 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
                     if (CURRENT_CHAR == '#') {
                         break;
                     }
+
+					if (CURRENT_CHAR == '%') {
+						break;
+					}
+
+					if (CURRENT_CHAR == state->sp.end) {
+						if (!state->sp.depth) {
+							break;
+						}
+
+						--(state->sp.depth);
+					}
+
+					if (CURRENT_CHAR == state->sp.start) {
+						++(state->sp.depth);
+						continue;
+					}
                 }
 
                 lexer->result_symbol = STRING_CONTENT;
