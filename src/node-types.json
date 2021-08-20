@@ -118,11 +118,65 @@
       "required": true,
       "types": [
         {
+          "type": "string_heredoc_head",
+          "named": true
+        },
+        {
           "type": "string_literal",
           "named": true
         },
         {
           "type": "string_percent",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string_heredoc_head",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "string_heredoc_ident",
+          "named": true
+        },
+        {
+          "type": "string_heredoc_start",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string_heredoc_tail",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "string_content",
+          "named": true
+        },
+        {
+          "type": "string_escape",
+          "named": true
+        },
+        {
+          "type": "string_heredoc_content",
+          "named": true
+        },
+        {
+          "type": "string_heredoc_end",
+          "named": true
+        },
+        {
+          "type": "string_interpolation",
           "named": true
         }
       ]
@@ -247,6 +301,22 @@
   },
   {
     "type": "string_escape",
+    "named": true
+  },
+  {
+    "type": "string_heredoc_content",
+    "named": true
+  },
+  {
+    "type": "string_heredoc_end",
+    "named": true
+  },
+  {
+    "type": "string_heredoc_ident",
+    "named": true
+  },
+  {
+    "type": "string_heredoc_start",
     "named": true
   },
   {

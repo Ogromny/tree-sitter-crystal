@@ -3,6 +3,7 @@ module.exports = grammar({
 	extras: $ => [
 		/\s/,
 		$.comment,
+		$.string_heredoc_tail
 	],
 	externals: $ => [
 		$.char,
@@ -12,8 +13,10 @@ module.exports = grammar({
 		$.string_interpolation_start,
 		$.string_percent_start,
 		$.string_percent_end,
-
-		// $.string_rdoc,
+		$.string_heredoc_start, // <<-
+		$.string_heredoc_ident,
+		$.string_heredoc_content,
+		$.string_heredoc_end,
 	],
 	rules: {
 		program: $ => repeat(
@@ -24,7 +27,7 @@ module.exports = grammar({
 			$.statement
 		),
 		statement: $ => choice(
-			$.expression
+			$.expression,
 		),
 		expression: $ => choice(
 			$.nil,
@@ -71,6 +74,17 @@ module.exports = grammar({
 		string: $ => choice(
 			$.string_literal,
 			$.string_percent,
+			$.string_heredoc_head,
+		),
+		_string_inner: $ => choice(
+			$.string_interpolation,
+			$.string_escape,
+			$.string_content
+		),
+		_string_literal: $ => seq(
+			"\"",
+			repeat($._string_inner),
+			"\"",
 		),
 		string_literal: $ => seq(
 			$._string_literal,
@@ -80,17 +94,6 @@ module.exports = grammar({
 					$._string_literal,
 				)
 			)
-		),
-		_string_literal: $ => seq(
-			"\"",
-			repeat(
-				choice(
-					$.string_interpolation,
-					$.string_escape,
-					$.string_content,
-				)
-			),
-			"\"",
 		),
 		string_leading_backslash: $ => "\\",
 		string_interpolation: $ => seq(
@@ -103,24 +106,17 @@ module.exports = grammar({
 		),
 		string_percent: $ => seq(
 			$.string_percent_start,
-			repeat(
-				choice(
-					$.string_interpolation,
-					$.string_escape,
-					$.string_content,
-				)
-			),
+			repeat($._string_inner),
 			$.string_percent_end
+		),
+		string_heredoc_head: $ => seq(
+			$.string_heredoc_start,
+			$.string_heredoc_ident
+		),
+		string_heredoc_tail: $ => seq(
+			$.string_heredoc_content,
+			repeat($._string_inner),
+			$.string_heredoc_end,
 		)
-		//	string_percent_literal_interpolated: $ => {
-		//		$.string_percent_literal_interpolated_start,
-		//		repeat(
-		//			choice(
-		//				$.string_simple_interpolation,
-		//				/.*/
-		//			)
-		//		),
-		//		$.string_percent_literal_end
-		//	}
 	}
 })
