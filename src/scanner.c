@@ -1,4 +1,5 @@
 #include "./state.h"
+#include "utils.h"
 #include <ctype.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -33,33 +34,6 @@ enum TokenType {
 #define CONSUME_WHITESPACE (lexer->advance(lexer, true))
 #define CURRENT_CHAR       (lexer->lookahead)
 #define IS_WHITESPACE      (iswspace(CURRENT_CHAR))
-#define MARK_END           (lexer->mark_end(lexer))
-
-int char_hex_to_hex(char c)
-{
-    if (c >= '0' && c <= '9') {
-        return c - '0';
-    }
-
-    if (c >= 'A' && c <= 'F') {
-        return c - 'A' + 10;
-    }
-
-    if (c >= 'a' && c <= 'f') {
-        return c - 'a' + 10;
-    }
-
-    return -1;
-}
-
-int char_oct_to_oct(char c)
-{
-    if (c >= '0' && c <= '7') {
-        return c - '0';
-    }
-
-    return -1;
-}
 
 bool handle_string_hexadecimal(TSLexer *lexer)
 {
@@ -67,7 +41,7 @@ bool handle_string_hexadecimal(TSLexer *lexer)
     uint64_t sum = 0;
 
     for (; iswxdigit(CURRENT_CHAR); ++chars, CONSUME_CHAR) {
-        sum = sum * 0x10 + char_hex_to_hex(CURRENT_CHAR);
+        sum = sum * 0x10 + char_to_hex(CURRENT_CHAR);
     }
 
     return (sum <= 0xFF && chars == 2);
@@ -187,7 +161,7 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
     while (IS_WHITESPACE) {
         if ((valid_symbols[STRING_HEREDOC_CONTENT] ||
              valid_symbols[STRING_HEREDOC_END]) &&
-            state->rdoc.name) {
+            state_has_heredoc(state)) {
             if (CURRENT_CHAR == '\n') {
                 break;
             }
@@ -298,25 +272,21 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         }
 
         if (valid_symbols[STRING_HEREDOC_END] && CURRENT_CHAR == '\n') {
-			CONSUME_CHAR;
-            DEBUG("hoe: '%c' '%d'\n", CURRENT_CHAR, CURRENT_CHAR)
-            for (int i = 0, j = strlen(state->rdoc.name); i < j; ++i) {
-                if (CURRENT_CHAR != state->rdoc.name[i]) {
+            CONSUME_CHAR;
+            for (int i = 0, j = strlen(state->heredoc[0]); i < j; ++i) {
+                if (CURRENT_CHAR != state->heredoc[0][i]) {
                     break;
                 }
 
-                DEBUG("endddddd\n")
-
                 if (i == (j - 1)) {
-					free(state->rdoc.name);
-					state->rdoc.name = NULL;
+                    state_pop_heredoc(state);
 
                     CONSUME_CHAR;
                     lexer->result_symbol = STRING_HEREDOC_END;
                     return true;
                 }
 
-				CONSUME_CHAR;
+                CONSUME_CHAR;
             }
         }
 
@@ -333,7 +303,7 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
                 }
 
                 if (CURRENT_CHAR == '"' &&
-                    !(state->sp.start || state->rdoc.name)) {
+                    !(state->sp.start || state->heredoc)) {
                     if (chars) {
                         break;
                     }
@@ -384,9 +354,6 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
             return false;
         }
 
-        char *name = malloc(sizeof(char));
-        *name = 0;
-
         for (int i = 0;; ++i, CONSUME_CHAR) {
             if (lexer->eof(lexer)) {
                 return false;
@@ -396,21 +363,17 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
                 break;
             }
 
-            name = realloc(name, sizeof(char) * (i + 2));
-            name[i] = CURRENT_CHAR;
-            name[i + 1] = 0;
+            state_append_heredoc(state, CURRENT_CHAR);
         }
 
         if (enclosed) {
             if (CURRENT_CHAR != '\'') {
-                free(name);
+                state_pop_heredoc(state);
                 return false;
             }
 
             CONSUME_CHAR;
         }
-
-        state->rdoc.name = name;
 
         lexer->result_symbol = STRING_HEREDOC_IDENT;
         return true;

@@ -14,26 +14,26 @@ typedef struct {
 } StringPercent;
 
 typedef struct {
-	char *name;
-} Heredoc;
-
-typedef struct {
     StringPercent sp;
-	Heredoc rdoc;
+	char **heredocs_array;
 } State;
 
-State *state_new(void) { return (State *)calloc(1, sizeof(State)); }
+static State *state_new(void)
+{
+    return (State *)calloc(1, sizeof(State));
+}
 
-void state_destroy(State *state) { free(state); }
+static void state_destroy(State *state) { free(state); }
 
-unsigned state_serialize(State *state, char *buffer)
+static unsigned state_serialize(State *state, char *buffer)
 {
     size_t size = sizeof(State);
     memcpy(buffer, state, size);
     return size;
 }
 
-void state_deserialize(State *state, char const *buffer, unsigned length)
+static void state_deserialize(State *state, char const *buffer,
+                                     unsigned length)
 {
     memcpy(state, buffer, length);
 }
