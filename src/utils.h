@@ -18,13 +18,13 @@ static int char_to_hex(char c)
     return -1;
 }
 
-static int char_to_oct(char c) {
+static int char_to_oct(char c)
+{
     if (c >= '0' && c <= '7') {
         return c - '0';
     }
 
     return -1;
-
 }
 
 #endif // !TS_CRYSTAL_UTILS_H
