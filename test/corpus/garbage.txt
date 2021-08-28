@@ -2,7 +2,7 @@
 garbage
 =======
 
-%(test ("lol"))
+%(hello ("world"))
 
 -------
 

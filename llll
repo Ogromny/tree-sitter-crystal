@@ -1,0 +1,49 @@
+new_parse
+process version:0, version_count:1, state:1, row:1, col:0
+lex_external state:2, row:1, column:0
+  skip character:10
+  consume character:'%'
+  consume character:'('
+lexed_lookahead sym:, size:3
+shift state:25
+process version:0, version_count:1, state:25, row:2, col:2
+lex_external state:5, row:2, column:2
+  consume character:'h'
+  consume character:'e'
+  consume character:'l'
+  consume character:'l'
+  consume character:'o'
+  consume character:' '
+  consume character:'('
+  consume character:'"'
+  consume character:'w'
+  consume character:'o'
+  consume character:'r'
+  consume character:'l'
+  consume character:'d'
+  consume character:'"'
+  consume character:')'
+lexed_lookahead sym:string_content, size:15
+shift state:33
+process version:0, version_count:1, state:33, row:2, col:17
+lex_external state:5, row:2, column:17
+  consume character:')'
+lexed_lookahead sym:, size:1
+reduce sym:_string_inner, child_count:1
+reduce sym:_string_literal_repeat1, child_count:1
+shift state:16
+process version:0, version_count:1, state:16, row:2, col:18
+lex_external state:2, row:2, column:18
+  skip character:10
+lex_internal state:0, row:2, column:18
+  skip character:10
+lexed_lookahead sym:end, size:1
+reduce sym:string_percent, child_count:3
+reduce sym:string, child_count:1
+reduce sym:expression, child_count:1
+reduce sym:statement, child_count:1
+reduce sym:statements, child_count:1
+reduce sym:program_repeat1, child_count:1
+reduce sym:program, child_count:1
+accept
+done

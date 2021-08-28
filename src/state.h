@@ -6,16 +6,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <tree_sitter/parser.h>
+#include "string_percent.h"
+#include "heredocs.h"
 
 typedef struct {
-    char start;
-    char end;
-    char depth;
-} StringPercent;
-
-typedef struct {
-    StringPercent sp;
-	char **heredocs_array;
+    StringPercent *string_percent;
+	HeredocsArray heredocs_array;
 } State;
 
 static State *state_new(void)
