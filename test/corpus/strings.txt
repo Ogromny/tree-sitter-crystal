@@ -1,6 +1,6 @@
-=========
-Strings 3
-=========
+=======
+strings
+=======
 
 "\u{1 2 3}"
 "\""                  
@@ -28,21 +28,20 @@ Strings 3
 "\u{48 45 4C 4C 4F}" 
 "#{nil} test"
 "test  test"
-# "abc" \
-#   "def"
-# "hello \
-#  world, \
-#  no newlines" # same as "hello world, no newlines"
-# %(hello ("world")) # => "hello (\"world\")"
-# %[hello ["world"]] # => "hello [\"world\"]"
-# %{hello {"world"}} # => "hello {\"world\"}"
-# %<hello <"world">> # => "hello <\"world\">"
-# %|hello "world"|   # => "hello \"world\""
-# 
-# %q(hello \n #{nil}) 
-# %Q(hello \n #{nil})
+"abc" \
+  "def"
+"hello \
+ world, \
+ no newlines" # same as "hello world, no newlines"
+%(hello ("world")) # => "hello (\"world\")"
+%[hello ["world"]] # => "hello [\"world\"]"
+%{hello {"world"}} # => "hello {\"world\"}"
+%<hello <"world">> # => "hello <\"world\">"
+%|hello "world"|   # => "hello \"world\""
+%q(hello \n #{nil}) 
+%Q(hello \n #{nil})
 
----------
+-------
 
 (program
 	(statements (statement (expression (string (string_literal (string_escape))))))
@@ -69,31 +68,14 @@ Strings 3
 	(statements (statement (expression (string (string_literal (string_escape))))))
 	(statements (statement (expression (string (string_literal (string_escape))))))
 	(statements (statement (expression (string (string_literal (string_escape))))))
-	(statements (statement (expression (string (string_literal
-	(string_interpolation (string_interpolation_start) (nil)
-	(string_interpolation_end)) (string_content))))))
-	(statements (statement (expression (string (string_literal
-	(string_content) (string_interpolation (string_interpolation_start) (nil)
-	(string_interpolation_end)) (string_content))))))
-	(statements (statement (expression (string (string_literal (string_content) (string_content))))))
-	(statements (statement (expression (string (string_literal
-	(string_content) (string_escape) (string_content) (string_escape) (string_content))))))
-	(comment)
-	(statements (statement (expression (string (string_percent
-	(string_percent_start) (string_content) (string_percent_end)))))) (comment)
-	(statements (statement (expression (string (string_percent
-	(string_percent_start) (string_content) (string_percent_end)))))) (comment)
-	(statements (statement (expression (string (string_percent
-	(string_percent_start) (string_content) (string_percent_end)))))) (comment)
-	(statements (statement (expression (string (string_percent
-	(string_percent_start) (string_content) (string_percent_end)))))) (comment)
-	(statements (statement (expression (string (string_percent
-	(string_percent_start) (string_content) (string_percent_end)))))) (comment)
-	(statements (statement (expression (string (string_percent
-	(string_percent_start) (string_content) (string_escape)
-	(string_interpolation (string_interpolation_start) (nil)
-	(string_interpolation_end)) (string_percent_end))))))
-	(statements (statement (expression (string (string_percent
-	(string_percent_start) (string_content) (string_escape)
-	(string_interpolation (string_interpolation_start) (nil)
-	(string_interpolation_end)) (string_percent_end)))))))
+	(statements (statement (expression (string (string_literal (string_interpolation (nil)) (string_content))))))
+	(statements (statement (expression (string (string_literal (string_content))))))
+	(statements (statement (expression (string (string_literal (string_content) (string_leading_backslash) (string_content))))))
+	(statements (statement (expression (string (string_literal (string_content) (string_escape) (string_content) (string_escape) (string_content)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_content)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_content)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_content)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_content)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_content)))))) (comment)
+	(statements (statement (expression (string (string_percent (string_content) (string_escape) (string_interpolation (nil)))))))
+	(statements (statement (expression (string (string_percent (string_content) (string_escape) (string_interpolation (nil))))))))

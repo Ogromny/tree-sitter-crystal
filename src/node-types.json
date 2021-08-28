@@ -230,7 +230,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "string_content",
@@ -242,14 +242,6 @@
         },
         {
           "type": "string_interpolation",
-          "named": true
-        },
-        {
-          "type": "string_percent_end",
-          "named": true
-        },
-        {
-          "type": "string_percent_start",
           "named": true
         }
       ]
@@ -321,14 +313,6 @@
   },
   {
     "type": "string_leading_backslash",
-    "named": true
-  },
-  {
-    "type": "string_percent_end",
-    "named": true
-  },
-  {
-    "type": "string_percent_start",
     "named": true
   },
   {

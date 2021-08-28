@@ -105,9 +105,9 @@ module.exports = grammar({
 			"}"
 		),
 		string_percent: $ => seq(
-			$.string_percent_start,
+			alias($.string_percent_start, ""),
 			repeat($._string_inner),
-			$.string_percent_end
+			alias($.string_percent_end, ""),
 		),
 		string_heredoc_head: $ => seq(
 			$.string_heredoc_start,

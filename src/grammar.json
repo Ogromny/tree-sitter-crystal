@@ -245,8 +245,13 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "string_percent_start"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "string_percent_start"
+          },
+          "named": false,
+          "value": ""
         },
         {
           "type": "REPEAT",
@@ -256,8 +261,13 @@
           }
         },
         {
-          "type": "SYMBOL",
-          "name": "string_percent_end"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "string_percent_end"
+          },
+          "named": false,
+          "value": ""
         }
       ]
     },

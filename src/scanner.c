@@ -37,11 +37,13 @@ enum TokenType {
 
 bool handle_string_hexadecimal(TSLexer *lexer)
 {
-    int chars = 0;
-    uint64_t sum = 0;
+    int chars = 0, sum = 0, hex = 0;
 
-    for (; iswxdigit(CURRENT_CHAR); ++chars, CONSUME_CHAR) {
-        sum = sum * 0x10 + char_to_hex(CURRENT_CHAR);
+    while ((hex = char_to_hex(CURRENT_CHAR)) != -1) {
+        sum = sum * 0x10 + hex;
+
+        ++chars;
+        CONSUME_CHAR;
     }
 
     return (sum <= 0xFF && chars == 2);
@@ -49,11 +51,13 @@ bool handle_string_hexadecimal(TSLexer *lexer)
 
 bool handle_string_octal(TSLexer *lexer)
 {
-    int chars = 0;
-    uint64_t sum = 0;
+    int chars = 0, sum = 0, oct = 0;
 
-    for (; CURRENT_CHAR >= '0' && CURRENT_CHAR <= '7'; ++chars, CONSUME_CHAR) {
-        sum = sum * 010 + char_oct_to_oct(CURRENT_CHAR);
+    while ((oct = char_to_oct(CURRENT_CHAR)) != -1) {
+        sum = sum * 010 + oct;
+
+        ++chars;
+        CONSUME_CHAR;
     }
 
     return (sum <= 0777 && chars < 4);
@@ -61,16 +65,17 @@ bool handle_string_octal(TSLexer *lexer)
 
 bool handle_char_unicode(TSLexer *lexer, bool string)
 {
-    bool between_brace = (CURRENT_CHAR == '{');
-    if (between_brace) {
-        CONSUME_CHAR;
-    }
+	bool between_brace = false;
+	int chars = 0, sum = 0, hex = 0;
 
-    int chars;
-    uint64_t sum; // NOTE: can overflow
+	if (CURRENT_CHAR == '{') {
+		between_brace = true;
+		CONSUME_CHAR;
+	}
+
 check:
     for (chars = 0, sum = 0; iswxdigit(CURRENT_CHAR); ++chars, CONSUME_CHAR) {
-        sum = sum * 0x10 + char_hex_to_hex(CURRENT_CHAR);
+        sum = sum * 0x10 + char_to_hex(CURRENT_CHAR);
     }
 
     if (between_brace) {
@@ -159,13 +164,13 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
     State *state = (State *)payload;
 
     while (IS_WHITESPACE) {
-        if ((valid_symbols[STRING_HEREDOC_CONTENT] ||
-             valid_symbols[STRING_HEREDOC_END]) &&
-            state_has_heredoc(state)) {
-            if (CURRENT_CHAR == '\n') {
-                break;
-            }
-        }
+        // if ((valid_symbols[STRING_HEREDOC_CONTENT] ||
+        //      valid_symbols[STRING_HEREDOC_END]) &&
+        //     state_has_heredoc(state)) {
+        //     if (CURRENT_CHAR == '\n') {
+        //         break;
+        //     }
+        // }
         CONSUME_WHITESPACE;
     }
 
@@ -271,24 +276,24 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
             }
         }
 
-        if (valid_symbols[STRING_HEREDOC_END] && CURRENT_CHAR == '\n') {
-            CONSUME_CHAR;
-            for (int i = 0, j = strlen(state->heredoc[0]); i < j; ++i) {
-                if (CURRENT_CHAR != state->heredoc[0][i]) {
-                    break;
-                }
+        // if (valid_symbols[STRING_HEREDOC_END] && CURRENT_CHAR == '\n') {
+        //     CONSUME_CHAR;
+        //     for (int i = 0, j = strlen(state->heredoc[0]); i < j; ++i) {
+        //         if (CURRENT_CHAR != state->heredoc[0][i]) {
+        //             break;
+        //         }
 
-                if (i == (j - 1)) {
-                    state_pop_heredoc(state);
+        //         if (i == (j - 1)) {
+        //             state_pop_heredoc(state);
 
-                    CONSUME_CHAR;
-                    lexer->result_symbol = STRING_HEREDOC_END;
-                    return true;
-                }
+        //             CONSUME_CHAR;
+        //             lexer->result_symbol = STRING_HEREDOC_END;
+        //             return true;
+        //         }
 
-                CONSUME_CHAR;
-            }
-        }
+        //         CONSUME_CHAR;
+        //     }
+        // }
 
         if (valid_symbols[STRING_HEREDOC_CONTENT] && CURRENT_CHAR == '\n') {
             CONSUME_CHAR;
@@ -302,8 +307,8 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
                     return false;
                 }
 
-                if (CURRENT_CHAR == '"' &&
-                    !(state->sp.start || state->heredoc)) {
+                if (CURRENT_CHAR == '"' && !(state->sp.start)/* &&
+                    !(state->sp.start || state->heredoc) */) {
                     if (chars) {
                         break;
                     }
@@ -342,42 +347,42 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         }
     }
 
-    if (valid_symbols[STRING_HEREDOC_IDENT]) {
-        bool enclosed = false;
+    // if (valid_symbols[STRING_HEREDOC_IDENT]) {
+    //     bool enclosed = false;
 
-        if (CURRENT_CHAR == '\'') {
-            enclosed = true;
-            CONSUME_CHAR;
-        }
+    //     if (CURRENT_CHAR == '\'') {
+    //         enclosed = true;
+    //         CONSUME_CHAR;
+    //     }
 
-        if (!iswalpha(CURRENT_CHAR)) {
-            return false;
-        }
+    //     if (!iswalpha(CURRENT_CHAR)) {
+    //         return false;
+    //     }
 
-        for (int i = 0;; ++i, CONSUME_CHAR) {
-            if (lexer->eof(lexer)) {
-                return false;
-            }
+    //     for (int i = 0;; ++i, CONSUME_CHAR) {
+    //         if (lexer->eof(lexer)) {
+    //             return false;
+    //         }
 
-            if (!iswalnum(CURRENT_CHAR) && CURRENT_CHAR != '_') {
-                break;
-            }
+    //         if (!iswalnum(CURRENT_CHAR) && CURRENT_CHAR != '_') {
+    //             break;
+    //         }
 
-            state_append_heredoc(state, CURRENT_CHAR);
-        }
+    //         state_append_heredoc(state, CURRENT_CHAR);
+    //     }
 
-        if (enclosed) {
-            if (CURRENT_CHAR != '\'') {
-                state_pop_heredoc(state);
-                return false;
-            }
+    //     if (enclosed) {
+    //         if (CURRENT_CHAR != '\'') {
+    //             state_pop_heredoc(state);
+    //             return false;
+    //         }
 
-            CONSUME_CHAR;
-        }
+    //         CONSUME_CHAR;
+    //     }
 
-        lexer->result_symbol = STRING_HEREDOC_IDENT;
-        return true;
-    }
+    //     lexer->result_symbol = STRING_HEREDOC_IDENT;
+    //     return true;
+    // }
 
     return false;
 }
