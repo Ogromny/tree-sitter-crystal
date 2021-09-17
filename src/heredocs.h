@@ -8,6 +8,8 @@
 typedef char **HeredocsArray;
 typedef char *HeredocsString;
 
+// TODO: serializer
+
 static void debug(char const *const str)
 {
     printf("%s: %s\n", "[HEREDOCS]", str);

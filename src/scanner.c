@@ -35,15 +35,15 @@ enum TokenType {
 #define CURRENT_CHAR       (lexer->lookahead)
 #define IS_WHITESPACE      (iswspace(CURRENT_CHAR))
 
+#define EXPECT_HEREDOC_TAIL \
+    (valid_symbols[STRING_HEREDOC_CONTENT] || valid_symbols[STRING_HEREDOC_END])
 #define EXPECT_STRING                                                 \
     (valid_symbols[STRING_INTERPOLATION_START] ||                     \
      valid_symbols[STRING_ESCAPE] || valid_symbols[STRING_CONTENT] || \
      valid_symbols[STRING_PERCENT_START] ||                           \
      valid_symbols[STRING_PERCENT_END] ||                             \
      valid_symbols[STRING_HEREDOC_START] ||                           \
-     valid_symbols[STRING_HEREDOC_IDENT] ||                           \
-     valid_symbols[STRING_HEREDOC_CONTENT] ||                         \
-     valid_symbols[STRING_HEREDOC_END])
+     valid_symbols[STRING_HEREDOC_IDENT] || EXPECT_HEREDOC_TAIL)
 
 bool handle_literal_hex(TSLexer *lexer)
 {
@@ -185,13 +185,13 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
     State *state = (State *)payload;
 
     while (IS_WHITESPACE) {
-        // if ((valid_symbols[STRING_HEREDOC_CONTENT] ||
-        //      valid_symbols[STRING_HEREDOC_END]) &&
-        //     state_has_heredoc(state)) {
-        //     if (CURRENT_CHAR == '\n') {
-        //         break;
-        //     }
-        // }
+        // if an heredoc body/tail is expected we must not consume the \n
+        // because it will be used to detect the beginning of the tail
+        if (EXPECT_HEREDOC_TAIL && state->heredocs_array &&
+            CURRENT_CHAR == '\n') {
+            break;
+        }
+
         CONSUME_WHITESPACE;
     }
 
@@ -244,11 +244,9 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
         if (!state->string_percent && valid_symbols[STRING_PERCENT_START] &&
             CURRENT_CHAR == '%') {
             CONSUME_CHAR;
-            ++chars;
 
             if (CURRENT_CHAR == 'q' || CURRENT_CHAR == 'Q') {
                 CONSUME_CHAR;
-                ++chars;
             }
 
             state->string_percent = string_percent_new();
@@ -300,6 +298,65 @@ bool tree_sitter_crystal_external_scanner_scan(void *payload, TSLexer *lexer,
             return true;
         }
 
+        if (EXPECT_HEREDOC_TAIL) {
+            if (valid_symbols[STRING_HEREDOC_START] && CURRENT_CHAR == '<') {
+                CONSUME_CHAR;
+                ++chars;
+
+                if (CURRENT_CHAR == '<') {
+                    CONSUME_CHAR;
+                    ++chars;
+
+                    if (CURRENT_CHAR == '-') {
+                        CONSUME_CHAR;
+                        lexer->result_symbol = STRING_HEREDOC_START;
+                        return true;
+                    }
+                }
+            }
+
+			if (valid_symbols[STRING_HEREDOC_IDENT]) {
+				bool is_single_quoted = false; // between ''
+
+				if (CURRENT_CHAR == '\'') {
+					is_single_quoted = true;
+					CONSUME_CHAR;
+				}
+
+				// heredoc identifier must start with an alphabetic char
+				if (!iswalpha(CURRENT_CHAR)) {
+					return false;
+				}
+
+				HeredocsString string = NULL;
+				while (true) {
+					CONSUME_CHAR;
+
+					if (lexer->eof(lexer)) {
+						return false;
+					}
+
+					if (!iswalnum(CURRENT_CHAR) && CURRENT_CHAR != '_') {
+						break;
+					}
+
+					string = heredocs_string_append(string, CURRENT_CHAR);
+				}
+
+				if (is_single_quoted) {
+					if (CURRENT_CHAR != '\'') {
+						heredocs_string_free(&string);
+						return false;
+					}
+
+					CONSUME_CHAR;
+				}
+
+				heredocs_array_append(&state->heredocs_array, string);
+				lexer->result_symbol = STRING_HEREDOC_IDENT;
+				return true;
+			}
+        }
         // TODO: heredoc
 
         if (valid_symbols[STRING_CONTENT]) {
